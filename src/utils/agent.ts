@@ -66,13 +66,15 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
 /**
  * Groq API Handler
  */
-async function callGroqModel(prompt: string): Promise<string> {
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export async function callGroqModel(prompt: string): Promise<string> {
+
   const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
   if (!GROQ_API_KEY) {
     return "Error: VITE_GROQ_API_KEY is not defined in your .env file.";
   }
-
+  await sleep(15000); // 15 seconds = 15,000 milliseconds
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",

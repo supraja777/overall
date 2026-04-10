@@ -1,89 +1,45 @@
 import React from 'react';
 
-interface AnalysisResult {
-  domain: string;
-  content: string;
-}
-
-interface Props {
-  results: AnalysisResult[];
+interface MiddleSectionProps {
+  results: { domain: string; content: string }[];
+  overallResult: string | null;
   isLoading: boolean;
 }
 
-const MiddleSection = ({ results, isLoading }: Props) => {
-  // Helper to dynamically style cards based on which Agent processed the data
-  const getAgentTheme = (domain: string) => {
-    const d = domain.toLowerCase();
-    if (d.includes('linkedin')) {
-      return {
-        label: 'LINKEDIN STRATEGIST',
-        color: '#0a66c2',
-        border: 'rgba(10, 102, 194, 0.3)',
-        bg: 'rgba(10, 102, 194, 0.05)'
-      };
-    }
-    if (d.includes('leetcode')) {
-      return {
-        label: 'ALGO SPECIALIST',
-        color: '#ffa116',
-        border: 'rgba(255, 161, 22, 0.3)',
-        bg: 'rgba(255, 161, 22, 0.05)'
-      };
-    }
-    return {
-      label: 'PORTFOLIO ANALYST',
-      color: '#818cf8',
-      border: 'rgba(129, 140, 248, 0.3)',
-      bg: 'rgba(129, 140, 248, 0.05)'
-    };
-  };
-
+const MiddleSection = ({ results, overallResult, isLoading }: MiddleSectionProps) => {
   return (
     <div style={styles.container}>
-      {/* Feed Header */}
       <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Intelligence Feed</h1>
-          <p style={styles.subtitle}>Real-time multi-agent synthesis</p>
-        </div>
-        {isLoading && <div className="pulse" title="Agents are active..."></div>}
+        <h2 style={styles.title}>INTELLIGENCE FEED</h2>
+        {isLoading && <span style={styles.statusPulse}>LIVE ANALYSIS ACTIVE</span>}
       </div>
-
-      <div style={styles.feedScroll}>
-        {results.length === 0 && !isLoading && (
-          <div style={styles.emptyState}>
-            <div style={styles.emptyIcon}>📡</div>
-            <p>Awaiting source ingestion...</p>
-            <span style={styles.emptyHint}>Add URLs in the left panel to begin analysis</span>
+      
+      <div style={styles.feed}>
+        {/* EXECUTIVE OVERALL REPORT - ALWAYS TOP */}
+        {overallResult && (
+          <div style={styles.overallCard}>
+            <div style={styles.overallHeader}>
+              <span style={styles.overallIcon}>💎</span>
+              <span style={styles.overallLabel}>EXECUTIVE VERDICT</span>
+            </div>
+            <div style={styles.markdownContent}>{overallResult}</div>
           </div>
         )}
 
-        {results.map((res, i) => {
-          const theme = getAgentTheme(res.domain);
-          return (
-            <div key={i} style={{ 
-              ...styles.card, 
-              borderLeft: `4px solid ${theme.color}`,
-              backgroundColor: theme.bg
-            }}>
-              <div style={styles.cardTop}>
-                <div style={{ ...styles.badge, color: theme.color, border: `1px solid ${theme.border}` }}>
-                  {theme.label}
-                </div>
-                <span style={styles.domainName}>{res.domain}</span>
-              </div>
-              
-              {/* This renders the complete multi-line analysis from the Agent */}
-              <div style={styles.cardBody}>
-                {res.content}
-              </div>
+        {/* INDIVIDUAL SOURCE REPORTS */}
+        {results.map((res, i) => (
+          <div key={i} style={styles.card}>
+            <div style={styles.cardHeader}>
+              <span style={styles.sourceLabel}>SOURCE:</span>
+              <span style={styles.domainName}>{res.domain}</span>
             </div>
-          );
-        })}
+            <div style={styles.markdownContent}>{res.content}</div>
+          </div>
+        ))}
 
-        {isLoading && (
-          <div style={styles.loadingIndicator}>
-            <span style={styles.loadingText}>Synthesizing deep-profile data...</span>
+        {!isLoading && results.length === 0 && (
+          <div style={styles.emptyState}>
+            Queue sources in the sidebar to begin neural extraction.
           </div>
         )}
       </div>
@@ -96,94 +52,60 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#020617', // Obsidian Deep Blue
-    color: '#f8fafc',
+    background: '#0a0a0c',
+    overflow: 'hidden',
+    borderRight: '1px solid #1e293b'
   },
   header: {
-    padding: '32px 40px',
+    padding: '24px 40px',
     borderBottom: '1px solid #1e293b',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    background: 'rgba(2, 6, 23, 0.8)',
-    backdropFilter: 'blur(10px)',
-    zIndex: 10
+    alignItems: 'center'
   },
-  title: { fontSize: '24px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' },
-  subtitle: { fontSize: '13px', color: '#64748b', marginTop: '4px' },
-  feedScroll: {
-    padding: '32px 40px',
-    overflowY: 'auto',
+  title: { fontSize: '12px', fontWeight: 900, letterSpacing: '2px', color: '#94a3b8' },
+  statusPulse: { fontSize: '10px', color: '#10b981', fontWeight: 700 },
+  feed: {
     flex: 1,
+    padding: '40px',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
     gap: '24px'
   },
+  overallCard: {
+    background: 'linear-gradient(145deg, #1e1b4b 0%, #0f172a 100%)',
+    border: '1px solid #6366f1',
+    borderRadius: '16px',
+    padding: '32px',
+    boxShadow: '0 10px 40px -10px rgba(99, 102, 241, 0.3)',
+    marginBottom: '16px'
+  },
+  overallHeader: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' },
+  overallIcon: { fontSize: '20px' },
+  overallLabel: { fontWeight: 900, fontSize: '12px', color: '#818cf8', letterSpacing: '1.5px' },
   card: {
-    padding: '28px',
-    borderRadius: '12px',
-    background: '#09090b',
+    background: '#111114',
     border: '1px solid #1e293b',
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-    transition: 'all 0.3s ease'
+    borderRadius: '12px',
+    padding: '24px'
   },
-  cardTop: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px'
-  },
-  badge: {
-    fontSize: '10px',
-    fontWeight: 800,
-    padding: '4px 10px',
-    borderRadius: '4px',
-    letterSpacing: '0.05em'
-  },
-  domainName: { fontSize: '12px', color: '#475569', fontWeight: 500 },
-  cardBody: {
-    fontSize: '15px',
-    lineHeight: '1.7',
+  cardHeader: { display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'center' },
+  sourceLabel: { fontSize: '10px', fontWeight: 700, color: '#475569' },
+  domainName: { fontSize: '11px', fontWeight: 700, color: '#f1f5f9' },
+  markdownContent: {
+    fontSize: '14px',
+    lineHeight: '1.6',
     color: '#cbd5e1',
-    whiteSpace: 'pre-wrap', // Essential for rendering AI bullet points/paragraphs
-    wordBreak: 'break-word'
+    whiteSpace: 'pre-wrap'
   },
-  emptyState: {
-    height: '60%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#334155'
-  },
-  emptyIcon: { fontSize: '48px', marginBottom: '16px', opacity: 0.3 },
-  emptyHint: { fontSize: '12px', marginTop: '8px', opacity: 0.6 },
-  loadingIndicator: {
-    padding: '20px',
-    textAlign: 'center',
-    border: '1px dashed #1e293b',
-    borderRadius: '12px'
-  },
-  loadingText: { fontSize: '13px', color: '#64748b', fontStyle: 'italic' }
+  emptyState: { 
+    textAlign: 'center', 
+    marginTop: '100px', 
+    color: '#475569', 
+    fontSize: '13px',
+    fontStyle: 'italic'
+  }
 };
 
 export default MiddleSection;
-
-
-// import { getFullContextForCompression } from '../utils/storage';
-
-// const MiddleSection = () => {
-//   const checkStorage = () => {
-//     const data = getFullContextForCompression();
-//     console.log("Current Global State:", JSON.parse(data));
-//     alert(`Stored Analyses: ${JSON.parse(data).analyses.length}`);
-//   };
-
-//   return (
-//     <button onClick={checkStorage} >
-//       CHECK DB
-//     </button>
-//   );
-// };
-
-// export default MiddleSection;

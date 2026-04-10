@@ -1,0 +1,18 @@
+
+// import { getFullContextForCompression } from '../utils/storage';
+
+// const MiddleSection = () => {
+//   const checkStorage = () => {
+//     const data = getFullContextForCompression();
+//     console.log("Current Global State:", JSON.parse(data));
+//     alert(`Stored Analyses: ${JSON.parse(data).analyses.length}`);
+//   };
+
+//   return (
+//     <button onClick={checkStorage} >
+//       CHECK DB
+//     </button>
+//   );
+// };
+
+// export default MiddleSection;
