@@ -1,21 +1,15 @@
-body { margin: 0; padding: 0; background: #0a0a0c; }
-
-/* Subtle pulse for loading */
-.pulse {
-  width: 12px;
-  height: 12px;
-  background: #6366f1;
-  border-radius: 50%;
-  box-shadow: 0 0 15px #6366f1;
-  animation: pulse-animation 2s infinite;
+.dot-flashing {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 5px;
+  background-color: #6366f1;
+  color: #6366f1;
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
 }
 
-@keyframes pulse-animation {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  70% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.5; }
+@keyframes dot-flashing {
+  0% { background-color: #6366f1; }
+  50%, 100% { background-color: rgba(99, 102, 241, 0.2); }
 }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }

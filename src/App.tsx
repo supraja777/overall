@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
+import RightSection from './components/RightSection';
 import { scrapData } from './utils/scraper';
 import { agent } from './utils/agent';
 
@@ -83,11 +84,9 @@ function App() {
         results={aiResults} 
         isLoading={isAnalyzing} 
       />
-      
-      {/* Optional: Right section for specific metrics or Chat */}
-      <div style={styles.rightPlaceholder}>
-        <div style={styles.badge}>SYSTEM ACTIVE</div>
-      </div>
+    
+
+      <RightSection /> 
     </div>
   );
 }
