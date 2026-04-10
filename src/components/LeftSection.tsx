@@ -5,13 +5,17 @@ const LeftSection = ({ items, onRun, isAnalyzing, onAdd }: any) => {
 
   return (
     <div style={styles.sidebar}>
-      <div style={styles.container}>
-        <h2 style={styles.heading}>Source Links</h2>
+      <div style={styles.brand}>
+        <div style={styles.logo}>✦</div>
+        <h2 style={styles.brandName}>NEURAL ANALYST</h2>
+      </div>
+
+      <div style={styles.content}>
+        <span style={styles.label}>DATA SOURCES</span>
         <div style={styles.list}>
-          {items.map((item: any) => (
-            <div key={item.id} style={styles.itemCard}>
-              <span style={{fontSize: '18px'}}>🔗</span>
-              <div style={styles.itemText}>{item.name}</div>
+          {items.map((it: any) => (
+            <div key={it.id} style={styles.itemCard}>
+              <span style={{opacity: 0.5}}>🔗</span> {it.name}
             </div>
           ))}
         </div>
@@ -20,17 +24,13 @@ const LeftSection = ({ items, onRun, isAnalyzing, onAdd }: any) => {
       <div style={styles.footer}>
         <input 
           style={styles.input} 
-          placeholder="Add URL (LinkedIn, Portfolio...)" 
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Paste URL..." 
+          value={url} 
+          onChange={(e) => setUrl(e.target.value)} 
         />
-        <button onClick={() => {onAdd(url, 'url'); setUrl('');}} style={styles.addButton}>Add Source</button>
-        <button 
-          onClick={onRun} 
-          disabled={isAnalyzing} 
-          style={styles.runButton}
-        >
-          {isAnalyzing ? 'Analyzing...' : 'Analyze Profiles'}
+        <button onClick={() => {onAdd(url, 'url'); setUrl('');}} style={styles.addBtn}>Add to Queue</button>
+        <button onClick={onRun} disabled={isAnalyzing} style={styles.runBtn}>
+          {isAnalyzing ? 'PROCESSSING...' : 'RUN INTELLIGENCE'}
         </button>
       </div>
     </div>
@@ -38,16 +38,18 @@ const LeftSection = ({ items, onRun, isAnalyzing, onAdd }: any) => {
 };
 
 const styles = {
-  sidebar: { width: '300px', background: '#ffffff', borderRight: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column' as const },
-  container: { flex: 1, padding: '20px', overflowY: 'auto' as const },
-  heading: { fontSize: '16px', fontWeight: 600, color: '#000000e6', marginBottom: '16px' },
+  sidebar: { width: '300px', display: 'flex', flexDirection: 'column' as const, borderRight: '1px solid #27272a', background: '#09090b' },
+  brand: { padding: '32px 24px', display: 'flex', alignItems: 'center', gap: '12px' },
+  logo: { background: 'linear-gradient(135deg, #6366f1, #a855f7)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' },
+  brandName: { fontSize: '14px', fontWeight: 700, letterSpacing: '1px' },
+  content: { flex: 1, padding: '0 24px', overflowY: 'auto' as const },
+  label: { fontSize: '10px', fontWeight: 800, color: '#71717a', letterSpacing: '1.5px', marginBottom: '16px', display: 'block' },
   list: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  itemCard: { padding: '12px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', gap: '10px' },
-  itemText: { fontSize: '12px', color: '#666', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' },
-  footer: { padding: '20px', borderTop: '1px solid #e0e0e0' },
-  input: { width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #848484', marginBottom: '10px', boxSizing: 'border-box' as const },
-  addButton: { width: '100%', padding: '8px', borderRadius: '1600px', border: '1px solid #0a66c2', background: 'transparent', color: '#0a66c2', fontWeight: 600, cursor: 'pointer', marginBottom: '8px' },
-  runButton: { width: '100%', padding: '10px', borderRadius: '1600px', border: 'none', background: '#0a66c2', color: 'white', fontWeight: 600, cursor: 'pointer' }
+  itemCard: { padding: '12px', background: '#18181b', borderRadius: '8px', fontSize: '12px', border: '1px solid #27272a', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' },
+  footer: { padding: '24px', background: '#09090b', borderTop: '1px solid #27272a' },
+  input: { width: '100%', padding: '12px', borderRadius: '8px', background: '#18181b', border: '1px solid #27272a', color: 'white', marginBottom: '12px', outline: 'none' },
+  addBtn: { width: '100%', padding: '10px', borderRadius: '8px', background: 'transparent', border: '1px solid #3f3f46', color: 'white', cursor: 'pointer', marginBottom: '8px', fontSize: '12px' },
+  runBtn: { width: '100%', padding: '12px', borderRadius: '8px', background: '#ffffff', color: '#000', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }
 };
 
 export default LeftSection;

@@ -23,25 +23,14 @@ function App() {
     setAiResults([]); 
 
     for (const item of items) {
-      if (item.type === 'url') {
-        try {
-          const domain = new URL(item.name).hostname.replace('www.', '');
-          const result = await scrapData(item.name);
-          
-          if (result.success && result.data) {
-            // WE WAIT FOR THE FULL STRING FROM THE AGENT
-            const fullAnalysis = await agent({ [domain]: result.data });
-            
-            // Push the complete text into the state
-            setAiResults((prev) => [
-              ...prev, 
-              { domain, content: fullAnalysis } 
-            ]);
-          }
-        } catch (e) {
-          console.error("Analysis failed", e);
+      try {
+        const domain = new URL(item.name).hostname.replace('www.', '');
+        const result = await scrapData(item.name);
+        if (result.success && result.data) {
+          const report = await agent({ [domain]: result.data });
+          setAiResults((prev) => [...prev, { domain, content: report }]);
         }
-      }
+      } catch (e) { console.error(e); }
     }
     setIsAnalyzing(false);
   };
@@ -60,9 +49,10 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     height: '100vh',
     width: '100vw',
-    backgroundColor: '#f3f2ef', 
+    backgroundColor: '#0a0a0c', // Deep Obsidian
+    color: '#e2e8f0',
     overflow: 'hidden',
-    fontFamily: '-apple-system, system-ui, sans-serif'
+    fontFamily: '"Inter", system-ui, sans-serif'
   }
 };
 
