@@ -78,13 +78,14 @@ function App() {
         onRun={runAnalysis} 
         isAnalyzing={isAnalyzing} 
       />
+
+      
       
       {/* Main Feed: Displays the AI Intelligence Reports */}
       <MiddleSection 
         results={aiResults} 
         isLoading={isAnalyzing} 
       />
-    
 
       <RightSection /> 
     </div>

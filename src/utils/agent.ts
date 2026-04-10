@@ -2,10 +2,11 @@ import { leetcode_agent } from '../agents/leetcode_agent';
 import { portfolio_agent } from '../agents/portfolio_agent';
 import { linkedin_agent } from '../agents/linkedin_agent';
 import { resume_agent } from '../agents/resume_agent';
+import { updateGlobalStorage } from './storage'; // Import the central storage utility
 
 /**
  * Orchestrator Agent
- * Routes the scraped data to the correct specialist based on the domain.
+ * Routes the scraped data to the correct specialist and stores results in a global list.
  */
 export const agent = async (scrappedDataMap: Record<string, string>): Promise<string> => {
   const entries = Object.entries(scrappedDataMap);
@@ -14,12 +15,16 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
     return "No data provided for analysis.";
   }
 
-  // We process the first entry (App.tsx sends one at a time for real-time updates)
+  // We process the first entry
   const [domain, content] = entries[0];
+  
+  // 1. STORE RAW SOURCE DATA
+  // Automatically store the input text before processing
+  updateGlobalStorage('source', domain, content);
+
   let prompt = "";
 
-  // 1. ROUTING LOGIC
-  // Determine which specialist agent should handle this data
+  // 2. ROUTING LOGIC
   if (domain.includes('pdf') || domain.includes('.txt') || domain.includes('FILE:')) {
     prompt = resume_agent(content);
   }
@@ -33,7 +38,6 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
     prompt = portfolio_agent(content);
   } 
   else {
-    // Fallback agent for general resumes or unknown professional sites
     prompt = `
       You are a Senior Technical Recruiter. 
       Analyze this professional data from ${domain} and provide a summary of 
@@ -44,10 +48,14 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
     `;
   }
 
-  // 2. EXECUTION
-  // Call the Groq Cloud API with the selected prompt
+  // 3. EXECUTION & STORAGE
   try {
     const aiResponse = await callGroqModel(prompt);
+
+    // 4. STORE COMPLETED ANALYSIS
+    // This adds the AI's report to the global list for the compression agent
+    updateGlobalStorage('analysis', domain, aiResponse);
+
     return aiResponse;
   } catch (error) {
     console.error("Agent Execution Error:", error);
@@ -57,7 +65,6 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
 
 /**
  * Groq API Handler
- * Connects to the Llama-3.3-70b model via Groq.
  */
 async function callGroqModel(prompt: string): Promise<string> {
   const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
@@ -86,7 +93,7 @@ async function callGroqModel(prompt: string): Promise<string> {
           }
         ],
         temperature: 0.6,
-        max_tokens: 4096 // Ensures you get the complete analysis back
+        max_tokens: 4096 
       })
     });
 
@@ -99,6 +106,6 @@ async function callGroqModel(prompt: string): Promise<string> {
     return result?.choices?.[0]?.message?.content || "Model returned an empty response.";
   } catch (error) {
     console.error("Fetch Error:", error);
-    return "Connection Error: Please ensure your Groq API Key is valid and the CORS extension is enabled in your browser.";
+    return "Connection Error: Check API Key and CORS settings.";
   }
 }
