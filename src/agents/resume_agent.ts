@@ -1,4 +1,3 @@
 export const resume_agent = (data: string) => {
-  console.log("Resume Agent");
-  // Logic for parsing work experience goes here
+  return `Analyze this Resume Content. Extract: Full Name, Contact Info, Work Experience, Education, and Technical Skills. Data: ${data}`;
 };

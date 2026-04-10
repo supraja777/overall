@@ -1,6 +1,7 @@
 import { leetcode_agent } from '../agents/leetcode_agent';
 import { portfolio_agent } from '../agents/portfolio_agent';
 import { linkedin_agent } from '../agents/linkedin_agent';
+import { resume_agent } from '../agents/resume_agent';
 
 /**
  * Orchestrator Agent
@@ -19,7 +20,10 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
 
   // 1. ROUTING LOGIC
   // Determine which specialist agent should handle this data
-  if (domain.includes('linkedin.com')) {
+  if (domain.includes('pdf') || domain.includes('.txt') || domain.includes('FILE:')) {
+    prompt = resume_agent(content);
+  }
+  else if (domain.includes('linkedin.com')) {
     prompt = linkedin_agent(content);
   } 
   else if (domain.includes('leetcode.com')) {
