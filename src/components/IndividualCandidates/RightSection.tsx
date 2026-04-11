@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { processConversation } from '../utils/processConversation';
+import { processConversation } from '../../utils/processConversation';
 
 interface Message {
   role: 'recruiter' | 'ai';
