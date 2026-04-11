@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -15,13 +16,21 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: Le
   const [url, setUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // AUTO-POPULATE: Fires only once when the candidate is selected
+  // AUTO-POPULATE: Grabs all data from the candidate object on mount
   useEffect(() => {
     if (selectedCandidate) {
+      // 1. Portfolio
       if (selectedCandidate.portfolio) onAdd(selectedCandidate.portfolio, 'url');
+      
+      // 2. LeetCode
       if (selectedCandidate.leetcode) onAdd(selectedCandidate.leetcode, 'url');
+      
+      // 3. Resume (Text extracted from the form)
+      if (selectedCandidate.resumeText) {
+        onAdd(`${selectedCandidate.name}_Resume.pdf`, 'file', selectedCandidate.resumeText);
+      }
     }
-  }, [selectedCandidate?.id]); // Dependency on ID to prevent repeated fires
+  }, [selectedCandidate?.id]); 
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,18 +41,17 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: Le
       reader.onload = async (event) => {
         try {
           const typedarray = new Uint8Array(event.target?.result as ArrayBuffer);
-          const loadingTask = pdfjsLib.getDocument({ data: typedarray, useWorkerFetch: true });
+          const loadingTask = pdfjsLib.getDocument({ data: typedarray });
           const pdf = await loadingTask.promise;
           let fullText = "";
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            const pageText = textContent.items.map((item: any) => item.str || "").join(" ");
-            fullText += `[Page ${i}]\n${pageText}\n\n`;
+            fullText += textContent.items.map((item: any) => item.str).join(" ") + "\n";
           }
           onAdd(file.name, 'file', fullText);
         } catch (err: any) {
-          alert(`Error reading PDF: ${err.message}`);
+          alert("Error reading PDF");
         }
       };
       reader.readAsArrayBuffer(file);
@@ -91,8 +99,8 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: Le
         />
         <div style={styles.buttonGroup}>
           <button onClick={() => { if(url) { onAdd(url, 'url'); setUrl(''); } }} style={styles.addBtn}>Add URL</button>
-          <button onClick={() => fileInputRef.current?.click()} style={styles.uploadBtn}>Upload PDF</button>
-          <input type="file" ref={fileInputRef} hidden onChange={handleFileUpload} accept=".pdf,.txt,.md" />
+          <button onClick={() => fileInputRef.current?.click()} style={styles.uploadBtn}>New PDF</button>
+          <input type="file" ref={fileInputRef} hidden onChange={handleFileUpload} accept=".pdf,.txt" />
         </div>
         <button 
           onClick={onRun} 

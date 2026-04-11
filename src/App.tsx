@@ -9,6 +9,7 @@ export interface Candidate {
   photo: string | null;
   portfolio: string;
   leetcode: string;
+  resumeText?: string; // Add this line
 }
 
 function App() {
