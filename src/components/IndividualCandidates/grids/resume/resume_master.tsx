@@ -3,12 +3,15 @@ import ResumeTop from './resume_top';
 import ResumeAnalysis from './resume_analysis';
 
 const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) => {
+  console.log(data)
   const parsedData = useMemo(() => {
     if (!data) return null;
     try {
+      // Logic to handle both raw objects and JSON strings from the API
       const raw = data.content ? data.content : data;
       return typeof raw === 'string' ? JSON.parse(raw) : raw;
     } catch (e) {
+      console.error("Failed to parse resume data", e);
       return null;
     }
   }, [data]);
@@ -19,18 +22,27 @@ const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) =>
 
   return (
     <div style={containerStyle}>
-      {/* SECTION 1: FIXED TOP (No scrolling here) */}
-      <ResumeTop percentage={parsedData.match_percentage} />
-      
-      {/* SECTION 2: SCROLLABLE BODY */}
-      <div style={styles.scrollArea}>
-        <ResumeAnalysis data={parsedData} />
+      {/* 1. THE HEADER: Ring & Top 10 Skills 
+          Note: We pass parsedData.match_percentage and parsedData.top_skills 
+      */}
+      <div style={styles.fixedHeader}>
+        <ResumeTop 
+          matchScore={parsedData.match_percentage} 
+          topSkills={parsedData.top_8_skills} 
+        />
       </div>
+      
+      
 
-      {!isExpanded && (
-        <div style={styles.footer}>
-          <span style={styles.clickHint}>CLICK_TO_EXPAND</span>
-        </div>
+      {isExpanded && (
+         <div>
+        <ResumeAnalysis 
+          neuralValidation={parsedData.neural_validation}
+          experienceHistory={parsedData.experience_history}
+          // We pass these as empty/hidden inside ResumeAnalysis 
+          // to avoid the double-ring visual.
+        />
+      </div>
       )}
     </div>
   );
@@ -41,9 +53,10 @@ const styles = {
     height: '100%', 
     display: 'flex', 
     flexDirection: 'column' as const,
-    overflow: 'hidden', // Clips everything outside the flex flow
+    overflow: 'hidden', 
     position: 'relative' as const,
-    backgroundColor: '#020617' 
+    backgroundColor: '#020617',
+    padding: '24px' // Add padding so it's not touching the edges
   },
   expandedContainer: { 
     width: '100%', 
@@ -56,16 +69,23 @@ const styles = {
     borderRadius: '12px',
     border: '1px solid #1e293b',
     overflow: 'hidden',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    padding: '24px'
+  },
+  fixedHeader: {
+    flexShrink: 0,
+    marginBottom: '20px',
+    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    paddingBottom: '20px'
   },
   scrollArea: { 
     flex: 1, 
-    overflowY: 'auto' as const, // ONLY this part scrolls
-    backgroundColor: '#020617'
+    overflowY: 'auto' as const,
+    backgroundColor: '#020617',
+    paddingRight: '4px' // Space for the scrollbar
   },
   footer: {
-    padding: '10px 20px',
-    borderTop: '1px solid rgba(255,255,255,0.02)',
+    padding: '10px 0',
     textAlign: 'right' as const,
     background: '#020617'
   },

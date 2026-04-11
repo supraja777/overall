@@ -40,3 +40,27 @@
 .read-the-docs {
   color: #888;
 }
+
+/* In App.css or index.html */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+
+:root {
+  --font-main: 'Roboto', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  /* This forces the 500 weight on everything */
+  font-family: var(--font-main) !important;
+  font-weight: 500 !important; 
+  -webkit-font-smoothing: antialiased;
+  color: #f1f5f9; /* Ensures text remains legible against dark theme */
+}
+
+.mono-label, 
+[style*="letterSpacing"] {
+  font-family: var(--font-mono) !important;
+  font-weight: 500 !important;
+  letter-spacing: 1.5px;
+}

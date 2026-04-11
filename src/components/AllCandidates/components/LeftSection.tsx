@@ -8,14 +8,16 @@ interface LeftSectionProps {
 
 const LeftSection = ({ candidates, onSelect }: LeftSectionProps) => {
   return (
-    <div style={styles.sidebar}>
+    <div style={styles.sidebar} className="hide-scrollbar">
+      {/* BRANDING HEADER */}
       <div style={styles.brand}>
         <div style={styles.logo}>✦</div>
-        <h2 style={styles.brandName}>NEURAL ANALYST</h2>
+        <h2 style={styles.brandName}>NEURAL_ANALYST</h2>
       </div>
 
       <div style={styles.content}>
-        <span style={styles.label}>SAVED CANDIDATES ({candidates.length})</span>
+        <span style={styles.label}>SAVED_CANDIDATES ({candidates.length})</span>
+        
         <div style={styles.list}>
           {candidates.map((c) => (
             <div key={c.id} style={styles.itemCard} onClick={() => onSelect(c)}>
@@ -23,19 +25,21 @@ const LeftSection = ({ candidates, onSelect }: LeftSectionProps) => {
                 style={{
                   ...styles.avatar,
                   backgroundImage: c.photo ? `url(${c.photo})` : 'none',
-                  backgroundColor: c.photo ? 'transparent' : '#f1f5f9'
+                  border: c.photo ? '1px solid #be185d' : '1px solid rgba(255,255,255,0.05)'
                 }} 
               >
-                {!c.photo && <span style={{color: '#94a3b8'}}>{c.name.charAt(0)}</span>}
+                {!c.photo && <span style={styles.avatarInitial}>{c.name.charAt(0)}</span>}
               </div>
+              
               <div style={styles.itemInfo}>
-                <div style={styles.itemName}>{c.name}</div>
-                <div style={styles.itemStatus}>Click to analyze →</div>
+                <div style={styles.itemName}>{c.name.toUpperCase()}</div>
+                <div style={styles.itemStatus}>INITIALIZE_ANALYSIS →</div>
               </div>
             </div>
           ))}
+
           {candidates.length === 0 && (
-            <div style={styles.emptyHint}>No candidates saved yet.</div>
+            <div style={styles.emptyHint}>NO_DATA_AVAILABLE</div>
           )}
         </div>
       </div>
@@ -44,19 +48,115 @@ const LeftSection = ({ candidates, onSelect }: LeftSectionProps) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  sidebar: { width: '300px', display: 'flex', flexDirection: 'column', background: '#f8fafc', height: '100vh', borderRight: '1px solid #e2e8f0' },
-  brand: { padding: '32px 24px', display: 'flex', alignItems: 'center', gap: '12px' },
-  logo: { background: 'linear-gradient(135deg, #6366f1, #a855f7)', width: '28px', height: '28px', borderRadius: '6px' },
-  brandName: { fontSize: '12px', fontWeight: 800, color: '#1e293b', letterSpacing: '0.5px', margin: 0 },
-  content: { flex: 1, padding: '0 24px' },
-  label: { fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '1px', marginBottom: '20px', display: 'block' },
-  list: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  itemCard: { padding: '12px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', gap: '12px', alignItems: 'center', cursor: 'pointer' },
-  avatar: { width: '36px', height: '36px', borderRadius: '50%', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' },
-  itemInfo: { overflow: 'hidden' },
-  itemName: { fontSize: '13px', fontWeight: 600, color: '#1e293b' },
-  itemStatus: { fontSize: '10px', color: '#6366f1', fontWeight: 700 },
-  emptyHint: { fontSize: '12px', color: '#94a3b8', textAlign: 'center', marginTop: '30px' }
+  sidebar: { 
+    width: '100%', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    background: '#020617', 
+    height: '100%',
+    overflowY: 'auto'
+  },
+  brand: { 
+    padding: '24px 0', 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '12px',
+    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    marginBottom: '24px'
+  },
+  logo: { 
+    background: '#be185d', 
+    width: '24px', 
+    height: '24px', 
+    borderRadius: '4px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    color: '#fff',
+    fontSize: '14px',
+    boxShadow: '0 0 10px rgba(190, 24, 93, 0.4)'
+  },
+  brandName: { 
+    fontSize: '11px', 
+    fontWeight: 900, 
+    color: '#f1f5f9', 
+    letterSpacing: '1.5px', 
+    margin: 0,
+    fontFamily: 'var(--font-mono)'
+  },
+  content: { 
+    flex: 1, 
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  label: { 
+    fontSize: '9px', 
+    fontWeight: 800, 
+    color: '#475569', 
+    letterSpacing: '1.2px', 
+    marginBottom: '16px', 
+    display: 'block',
+    fontFamily: 'var(--font-mono)'
+  },
+  list: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8px' 
+  },
+  itemCard: { 
+    padding: '12px', 
+    background: 'rgba(15, 23, 42, 0.4)', 
+    borderRadius: '8px', 
+    border: '1px solid rgba(255, 255, 255, 0.05)', 
+    display: 'flex', 
+    gap: '12px', 
+    alignItems: 'center', 
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  avatar: { 
+    width: '32px', 
+    height: '32px', 
+    borderRadius: '6px', // Square-ish avatar to match UI
+    backgroundSize: 'cover', 
+    backgroundPosition: 'center', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: '#0f172a'
+  },
+  avatarInitial: {
+    color: '#be185d',
+    fontSize: '12px',
+    fontWeight: 800,
+    fontFamily: 'var(--font-mono)'
+  },
+  itemInfo: { 
+    overflow: 'hidden' 
+  },
+  itemName: { 
+    fontSize: '11px', 
+  //  fontWeight: 800, 
+    color: '#f1f5f9', 
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '0.5px',
+    fontWeight: 500, // Roboto looks best at 500 for semi-bold
+  },
+  itemStatus: { 
+    fontSize: '9px', 
+    color: '#be185d', 
+    fontWeight: 700,
+    marginTop: '2px',
+    fontFamily: 'var(--font-mono)'
+  },
+  emptyHint: { 
+    fontSize: '10px', 
+    color: '#334155', 
+    textAlign: 'center', 
+    marginTop: '40px',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '1px'
+  }
 };
 
 export default LeftSection;

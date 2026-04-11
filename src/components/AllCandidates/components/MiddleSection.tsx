@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
+// Note: Ensure your build environment supports this import style for the worker
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -64,114 +65,99 @@ const MiddleSection = ({ onSave }: any) => {
   };
 
   return (
-    <div style={styles.page}>
+    <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <h2 style={styles.heading}>Register candidate</h2>
-        <p style={styles.subheading}>Fill in the details below to create a new candidate profile</p>
+        <h2 style={styles.heading}>REGISTER_CANDIDATE</h2>
+        <p style={styles.subheading}>Initialize a new profile within the neural database.</p>
       </div>
 
-      {/* Card 1 — Profile Picture */}
+      {/* Profile Picture */}
       <div style={styles.card}>
-        <p style={styles.cardLabel}>Profile picture</p>
+        <p style={styles.cardLabel}>BIOMETRIC_VISUAL</p>
         <div style={styles.photoRow}>
           <div
             style={{
               ...styles.avatar,
               backgroundImage: photo ? `url(${photo})` : 'none',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              border: photo ? '2px solid #10b981' : '1px dashed #cbd5e1',
+              border: photo ? '2px solid #be185d' : '1px dashed rgba(255,255,255,0.1)',
             }}
             onClick={() => photoInputRef.current?.click()}
           >
             {!photo && <span style={styles.avatarPlus}>+</span>}
           </div>
           <div>
-            <p style={styles.photoHint}>Click to upload a photo<br />JPG or PNG, max 5MB</p>
+            <p style={styles.photoHint}>Uplink profile image<br />JPG/PNG — MAX 5MB</p>
             <button style={styles.chooseBtn} onClick={() => photoInputRef.current?.click()}>
-              Choose file
+              SELECT_FILE
             </button>
           </div>
         </div>
         <input type="file" ref={photoInputRef} hidden accept="image/*" onChange={handlePhotoUpload} />
       </div>
 
-      {/* Card 2 — Personal Info */}
+      {/* Personal Info */}
       <div style={styles.card}>
-        <p style={styles.cardLabel}>Personal info</p>
-
+        <p style={styles.cardLabel}>IDENTIFICATION_DATA</p>
+        
         <div style={styles.field}>
-          <label style={styles.label}>Full name</label>
+          <label style={styles.label}>FULL_NAME</label>
           <input
-            style={{ ...styles.input, borderColor: nameError ? '#f87171' : '#e2e8f0' }}
+            style={{ ...styles.input, borderColor: nameError ? '#be185d' : 'rgba(255,255,255,0.1)' }}
             value={name}
             onChange={e => { setName(e.target.value); setNameError(false); }}
             placeholder="e.g. Jane Doe"
           />
-          {nameError && <span style={styles.errorText}>Name is required</span>}
+          {nameError && <span style={styles.errorText}>CRITICAL: Name Required</span>}
         </div>
 
-        <div style={styles.divider} />
-
         <div style={styles.field}>
-          <label style={styles.label}>Portfolio URL</label>
+          <label style={styles.label}>PORTFOLIO_LINK</label>
           <input
             style={styles.input}
             value={portfolio}
             onChange={e => setPortfolio(e.target.value)}
-            placeholder="https://yourportfolio.com"
+            placeholder="https://..."
           />
         </div>
 
         <div style={{ ...styles.field, marginBottom: 0 }}>
-          <label style={styles.label}>LeetCode URL</label>
+          <label style={styles.label}>LEETCODE_HANDLE</label>
           <input
             style={styles.input}
             value={leetcode}
             onChange={e => setLeetcode(e.target.value)}
-            placeholder="leetcode.com/u/handle"
+            placeholder="u/handle"
           />
         </div>
       </div>
 
-      {/* Card 3 — Resume */}
+      {/* Resume Upload */}
       <div style={styles.card}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <p style={{ ...styles.cardLabel, marginBottom: 0 }}>Technical resume</p>
-          {resumeUrl && (
-            <span style={styles.badge}>Attached</span>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+          <p style={{ ...styles.cardLabel, marginBottom: 0 }}>KNOWLEDGE_GRAPH_PDF</p>
+          {resumeUrl && <span style={styles.badge}>SYNCED</span>}
         </div>
 
         <div
           style={{
             ...styles.uploadZone,
-            borderColor: resumeUrl ? '#10b981' : '#cbd5e1',
-            borderStyle: resumeUrl ? 'solid' : 'dashed',
-            background: resumeUrl ? '#ecfdf5' : '#f8fafc',
+            borderColor: resumeUrl ? '#be185d' : 'rgba(255,255,255,0.1)',
+            backgroundColor: resumeUrl ? 'rgba(190, 24, 93, 0.05)' : '#0f172a',
           }}
           onClick={() => fileInputRef.current?.click()}
         >
-          <div style={{ ...styles.uploadIcon, background: resumeUrl ? '#d1fae5' : '#f1f5f9' }}>
-            {resumeUrl ? (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8l3.5 3.5L13 4" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1v9M4.5 5.5L8 2l3.5 3.5M2 12h12v2H2z" stroke="#94a3b8" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
+          <div style={{ ...styles.uploadIcon, background: resumeUrl ? '#be185d' : 'rgba(255,255,255,0.03)' }}>
+             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+               <path d="M8 1v9M4.5 5.5L8 2l3.5 3.5M2 12h12v2H2z" stroke={resumeUrl ? "#fff" : "#475569"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+             </svg>
           </div>
           <div>
-            <p style={{ fontSize: '13px', fontWeight: 600, color: resumeUrl ? '#059669' : '#1e293b', margin: 0 }}>
-              {isExtracting ? 'Analyzing PDF...' : resumeFileName
-                ? (resumeFileName.length > 30 ? resumeFileName.substring(0, 27) + '...' : resumeFileName)
-                : 'Upload resume'}
+            <p style={{ fontSize: '12px', fontWeight: 700, color: resumeUrl ? '#fff' : '#f1f5f9', margin: 0, fontFamily: 'var(--font-mono)' }}>
+              {isExtracting ? 'EXTRACTING_TEXT...' : resumeFileName || 'UPLOAD_RESUME'}
             </p>
-            <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-              {resumeUrl ? 'Click to replace' : 'PDF format · Max 10MB'}
+            <span style={{ fontSize: '10px', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+              {resumeUrl ? 'CLICK TO OVERWRITE' : 'PDF_SYNC_AVAILABLE'}
             </span>
           </div>
         </div>
@@ -180,178 +166,164 @@ const MiddleSection = ({ onSave }: any) => {
 
       {/* Submit */}
       <button style={styles.submitBtn} onClick={handleSubmit}>
-        Create candidate profile
+        INITIALIZE_PROFILE
       </button>
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    flex: 1,
-    padding: '48px 60px',
-    background: '#e2e8f0',
-    overflowY: 'auto',
-    minHeight: '100vh',
+  container: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+    backgroundColor: '#020617', // Match your dashboard
   },
   header: {
-    marginBottom: '28px',
+    marginBottom: '8px',
   },
   heading: {
-    fontSize: '22px',
-    fontWeight: 600,
-    color: '#0f172a',
+    fontSize: '18px',
+    fontWeight: 800,
+    color: '#f1f5f9',
     margin: 0,
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '1px',
   },
   subheading: {
-    fontSize: '14px',
+    fontSize: '12px',
     color: '#64748b',
-    marginTop: '4px',
+    marginTop: '6px',
   },
-
-  // Card
   card: {
-    background: '#f1f5f9',
-    border: '1px solid #cbd5e1',
-    borderRadius: '14px',
-    padding: '20px 24px',
-    marginBottom: '16px',
-    maxWidth: '480px',
+    background: 'rgba(15, 23, 42, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    borderRadius: '12px',
+    padding: '24px',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    boxSizing: 'border-box' as const,
   },
   cardLabel: {
-    fontSize: '11px',
-    fontWeight: 700,
-    color: '#94a3b8',
+    fontSize: '10px',
+    fontWeight: 800,
+    color: '#475569',
     textTransform: 'uppercase',
-    letterSpacing: '0.8px',
-    marginBottom: '16px',
+    letterSpacing: '1.2px',
+    marginBottom: '18px',
+    fontFamily: 'var(--font-mono)',
   },
-
-  // Photo
   photoRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '20px',
   },
   avatar: {
-    width: '68px',
-    height: '68px',
-    borderRadius: '50%',
-    backgroundColor: '#f1f5f9',
+    width: '72px',
+    height: '72px',
+    borderRadius: '12px', // Square-ish like the rest of your UI
+    backgroundColor: '#0f172a',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    flexShrink: 0,
-    overflow: 'hidden',
-    transition: 'border-color 0.2s',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    transition: 'all 0.2s',
   },
   avatarPlus: {
-    fontSize: '24px',
-    color: '#cbd5e1',
-    fontWeight: 300,
-    lineHeight: 1,
+    fontSize: '20px',
+    color: '#334155',
   },
   photoHint: {
-    fontSize: '13px',
+    fontSize: '11px',
     color: '#64748b',
-    lineHeight: 1.6,
+    lineHeight: 1.5,
     margin: 0,
+    fontFamily: 'var(--font-mono)',
   },
   chooseBtn: {
-    marginTop: '8px',
-    fontSize: '12px',
-    fontWeight: 600,
-    color: '#3b82f6',
-    background: '#eff6ff',
+    marginTop: '10px',
+    fontSize: '9px',
+    fontWeight: 800,
+    color: '#be185d',
+    background: 'rgba(190, 24, 93, 0.1)',
     border: 'none',
-    borderRadius: '8px',
-    padding: '5px 12px',
+    borderRadius: '4px',
+    padding: '6px 12px',
     cursor: 'pointer',
+    fontFamily: 'var(--font-mono)',
   },
-
-  // Fields
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
-    marginBottom: '16px',
+    gap: '8px',
+    marginBottom: '18px',
   },
   label: {
-    fontSize: '11px',
-    fontWeight: 700,
+    fontSize: '9px',
+    fontWeight: 800,
     color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: '0.7px',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '1px',
   },
   input: {
-    padding: '10px 12px',
-    borderRadius: '10px',
-    border: '1px solid #cbd5e1',
-    fontSize: '14px',
-    color: '#0f172a',
+    padding: '12px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    fontSize: '13px',
+    color: '#f1f5f9',
+    background: '#0f172a',
     outline: 'none',
-    background: '#ffffff',
-    transition: 'border-color 0.15s',
+    fontFamily: 'var(--font-mono)',
   },
   errorText: {
-    fontSize: '12px',
-    color: '#ef4444',
+    fontSize: '10px',
+    color: '#be185d',
+    fontWeight: 700,
   },
-  divider: {
-    height: '1px',
-    background: '#f1f5f9',
-    margin: '4px 0 16px',
-  },
-
-  // Upload
   uploadZone: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    padding: '14px',
-    borderRadius: '10px',
-    border: '1px dashed #cbd5e1',
-    background: '#f8fafc',
+    gap: '14px',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px dashed',
     cursor: 'pointer',
-    transition: 'all 0.15s',
+    transition: 'all 0.2s',
   },
   uploadIcon: {
-    width: '36px',
-    height: '36px',
-    borderRadius: '8px',
+    width: '32px',
+    height: '32px',
+    borderRadius: '6px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
   },
-
-  // Badge
   badge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: '11px',
-    fontWeight: 600,
+    fontSize: '9px',
+    fontWeight: 900,
     padding: '2px 8px',
-    borderRadius: '6px',
-    background: '#d1fae5',
-    color: '#059669',
+    borderRadius: '4px',
+    background: '#be185d',
+    color: '#fff',
+    fontFamily: 'var(--font-mono)',
   },
-
-  // Submit
   submitBtn: {
-    maxWidth: '480px',
     width: '100%',
-    padding: '14px',
-    borderRadius: '12px',
+    padding: '16px',
+    borderRadius: '8px',
     border: 'none',
-    background: '#0f172a',
+    background: '#be185d',
     color: '#ffffff',
-    fontSize: '14px',
-    fontWeight: 600,
+    fontSize: '12px',
+    fontWeight: 800,
     cursor: 'pointer',
-    marginTop: '4px',
-    transition: 'opacity 0.15s',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '1px',
+    boxShadow: '0 4px 20px rgba(190, 24, 93, 0.2)',
   },
 };
 

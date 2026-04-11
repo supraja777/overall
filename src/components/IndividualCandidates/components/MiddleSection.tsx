@@ -62,7 +62,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   const d = r.domain.toLowerCase();
                   return d.includes('pdf') || d.includes('resume');
                 })} 
-                isExpanded={expandedTile === 0} 
+                isExpanded={false} 
               />
             ), "PDF_CORE")}
             {/* TILE 1: PORTFOLIO */}

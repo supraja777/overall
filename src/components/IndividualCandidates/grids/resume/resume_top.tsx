@@ -1,37 +1,60 @@
 import React from 'react';
 
-const ResumeTop = ({ percentage }: { percentage: number }) => {
-  const sqSize = 70;
-  const strokeWidth = 5;
-  const radius = (sqSize - strokeWidth) / 2;
+interface ResumeTopProps {
+  matchScore?: number;
+  topSkills?: string[];
+}
+
+const ResumeTop = ({ matchScore = 0, topSkills = [] }: ResumeTopProps) => {
+  const radius = 34; 
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (circumference * percentage) / 100;
+  const safeScore = Math.min(Math.max(matchScore, 0), 100);
+  const offset = circumference - (safeScore / 100) * circumference;
 
   return (
     <div style={styles.container}>
-      <div style={styles.headerRow}>
-        <span style={styles.mainTitle}>RESUME_ALIGNMENT</span>
-        <span style={styles.categoryLabel}>PDF_CORE</span>
-      </div>
-
-      <div style={styles.scoreContent}>
-        <div style={styles.radialWrapper}>
-          <svg width={sqSize} height={sqSize} viewBox={`0 0 ${sqSize} ${sqSize}`}>
-            <circle cx={sqSize/2} cy={sqSize/2} r={radius} strokeWidth={strokeWidth} style={styles.track} />
-            <circle 
-              cx={sqSize/2} cy={sqSize/2} r={radius} strokeWidth={strokeWidth} 
-              style={styles.progress} strokeDasharray={circumference} strokeDashoffset={offset}
-              transform={`rotate(-90 ${sqSize/2} ${sqSize/2})`}
+      <div style={styles.headerLayout}>
+        {/* MID-SIZE RING */}
+        <div style={styles.ringWrapper}>
+          <svg width="90" height="90" style={styles.svg}>
+            <circle cx="45" cy="45" r={radius} style={styles.backgroundCircle} />
+            <circle
+              cx="45"
+              cy="45"
+              r={radius}
+              style={{
+                ...styles.progressCircle,
+                strokeDasharray: circumference,
+                strokeDashoffset: isNaN(offset) ? circumference : offset,
+              }}
             />
           </svg>
-          <div style={styles.percentageText}>{percentage}%</div>
+          <div style={styles.scoreText}>
+            <span style={styles.percentage}>{safeScore}</span>
+            <span style={styles.unit}>%</span>
+          </div>
         </div>
 
-        <div style={styles.verdictWrapper}>
-          <div style={styles.verdictLabel}>NEURAL_VALIDATION</div>
-          <p style={styles.verdictSentence}>
-            Resume is <span style={styles.pinkHighlight}>{percentage}% strong</span> for this role.
-          </p>
+        {/* STATUS INFO */}
+        <div style={styles.statusBox}>
+          <div style={styles.labelRow}>
+            <div style={styles.glowDot} />
+            <span style={styles.label}>NEURAL_MATCH_ENGINE</span>
+          </div>
+          <h3 style={styles.matchTitle}>
+            Strength: <span style={styles.highlight}>{safeScore}%</span>
+          </h3>
+          <p style={styles.subText}>Semantic alignment verified.</p>
+        </div>
+      </div>
+
+      {/* SKILLS SECTION */}
+      <div style={styles.skillsSection}>
+        <span style={styles.label}>CORE_COMPETENCIES</span>
+        <div style={styles.chipGrid}>
+          {topSkills?.slice(0, 10).map((skill, i) => (
+            <span key={i} style={styles.skillChip}>{skill}</span>
+          ))}
         </div>
       </div>
     </div>
@@ -39,25 +62,115 @@ const ResumeTop = ({ percentage }: { percentage: number }) => {
 };
 
 const styles = {
-  container: { 
-    padding: '24px 24px 16px 24px', 
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
-    background: 'rgba(15, 23, 42, 0.3)', // Slight contrast for the header
-    flexShrink: 0, // This is key: it tells Flexbox "never shrink or move this"
-    zIndex: 10
+  container: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '20px',
+    width: '100%',
   },
-  headerRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '16px' },
-  mainTitle: { fontSize: '11px', fontWeight: 900, color: '#f8fafc', letterSpacing: '1.5px' },
-  categoryLabel: { fontSize: '10px', fontWeight: 800, color: '#be185d', letterSpacing: '1px' },
-  scoreContent: { display: 'flex', alignItems: 'center', gap: '24px' },
-  radialWrapper: { position: 'relative' as const, width: '70px', height: '70px' },
-  track: { fill: 'none', stroke: '#1e293b' },
-  progress: { fill: 'none', stroke: '#be185d', strokeLinecap: 'round' as const, transition: '0.5s' },
-  percentageText: { position: 'absolute' as const, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#fff', fontSize: '16px', fontWeight: 900 },
-  verdictWrapper: { display: 'flex', flexDirection: 'column' as const },
-  verdictLabel: { fontSize: '9px', color: '#64748b', fontWeight: 800, marginBottom: '4px', letterSpacing: '1px' },
-  verdictSentence: { fontSize: '13px', color: '#cbd5e1', margin: 0, fontWeight: 400 },
-  pinkHighlight: { color: '#be185d', fontWeight: 800 }
+  headerLayout: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+  },
+  ringWrapper: {
+    position: 'relative' as const,
+    width: '90px',
+    height: '90px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  svg: { transform: 'rotate(-90deg)' },
+  backgroundCircle: {
+    fill: 'none',
+    stroke: '#1e293b',
+    strokeWidth: 5,
+  },
+  progressCircle: {
+    fill: 'none',
+    stroke: '#be185d',
+    strokeWidth: 5,
+    strokeLinecap: 'round' as const,
+    filter: 'drop-shadow(0 0 4px rgba(190, 24, 93, 0.6))',
+    transition: 'stroke-dashoffset 1s ease-in-out',
+  },
+  scoreText: {
+    position: 'absolute' as const,
+    display: 'flex',
+    alignItems: 'baseline',
+  },
+  percentage: {
+    fontSize: '20px',
+    fontWeight: 800,
+    color: '#fff',
+    fontFamily: 'var(--font-mono)',
+  },
+  unit: {
+    fontSize: '10px',
+    color: '#be185d',
+    fontWeight: 700,
+    marginLeft: '1px',
+  },
+  statusBox: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
+  },
+  labelRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  glowDot: {
+    width: '5px',
+    height: '5px',
+    borderRadius: '50%',
+    backgroundColor: '#be185d',
+    boxShadow: '0 0 8px #be185d',
+  },
+  label: {
+    fontSize: '9px',
+    fontWeight: 800,
+    color: '#475569',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '1px',
+  },
+  matchTitle: {
+    fontSize: '16px',
+    fontWeight: 700,
+    color: '#f1f5f9',
+    margin: 0,
+  },
+  highlight: {
+    color: '#be185d',
+  },
+  subText: {
+    fontSize: '11px',
+    color: '#64748b',
+    margin: 0,
+  },
+  skillsSection: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '10px',
+  },
+  chipGrid: {
+    display: 'flex',
+    flexWrap: 'wrap' as const,
+    gap: '6px',
+  },
+  skillChip: {
+    fontSize: '10px',
+    padding: '4px 10px',
+    backgroundColor: 'rgba(30, 41, 59, 0.6)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '4px',
+    color: '#cbd5e1',
+    fontFamily: 'var(--font-mono)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+  },
 };
 
 export default ResumeTop;
