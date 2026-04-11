@@ -85,7 +85,7 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
           setActiveView({ type, content });
         }}
       />
-
+      <div style={{flex: 1}}>
       <MiddleSection 
         results={aiResults} 
         overallResult={overallResult}
@@ -94,7 +94,7 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
         activeView={activeView}
         showGrid={showGrid}
       />
-
+      </div>
       <RightSection />
     </div>
   );

@@ -24,6 +24,7 @@ function App() {
   // THIS FUNCTION TRIGGERS THE SWITCH
   const handleSelectCandidate = (candidate: Candidate) => {
     console.log("Selecting candidate:", candidate.name); // Debug log
+    console.log("Candidate info ", candidate)
     setSelectedCandidate(candidate);
     setIsIndividualView(true); // Switches the view
   };

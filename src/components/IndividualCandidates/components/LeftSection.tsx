@@ -14,6 +14,7 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    console.log("Items : ", items)
     if (selectedCandidate) {
       if (selectedCandidate.portfolio) onAdd(selectedCandidate.portfolio, 'url');
       if (selectedCandidate.leetcode) onAdd(selectedCandidate.leetcode, 'url');
@@ -35,6 +36,7 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
 
       <div style={styles.content}>
         <span style={styles.label}>QUEUE ({items.length})</span>
+        
         <div style={styles.list}>
           {items.map((it) => (
             <div 
