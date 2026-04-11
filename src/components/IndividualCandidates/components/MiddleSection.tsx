@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import ResumeTop from '../grids/resume_top';
+import ResumeTop from '../grids/resume/resume_top';
+import ResumeGrid from '../grids/resume/resume_master';
 import PortfolioTop from '../grids/portfolio_top';
 import LeetCodeTop from '../grids/leetcode_top';
 import ExecutiveTop from '../grids/executive_top';
-import ResumeAnalysis from '../grids/resume_analysis';
+import ResumeAnalysis from '../grids/resume/resume_analysis';
 import PortfolioAnalysis from '../grids/portfolio_analysis';
 import LeetCodeAnalysis from '../grids/leetcode_analysis';
 import ExecutiveVerdict from '../grids/executive_verdict';
@@ -48,13 +49,22 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
         {showGrid ? (
           <div style={styles.grid}>
             {/* TILE 0: RESUME */}
-            {renderTile(0, "RESUME ALIGNMENT", (
+            {/* {renderTile(0, "RESUME ALIGNMENT", (
               <>
                 <ResumeTop />
                 <ResumeAnalysis data={results.find((r: any) => r.domain === 'resume') || results[0]} />
               </>
-            ), "PDF_CORE")}
+            ), "PDF_CORE")} */}
 
+            {renderTile(0, "RESUME ALIGNMENT", (
+              <ResumeGrid 
+                data={results.find((r: any) => {
+                  const d = r.domain.toLowerCase();
+                  return d.includes('pdf') || d.includes('resume');
+                })} 
+                isExpanded={expandedTile === 0} 
+              />
+            ), "PDF_CORE")}
             {/* TILE 1: PORTFOLIO */}
             {renderTile(1, "PROJECT DEPTH", (
               <>
