@@ -1,11 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
 import { agent } from '../IndividualCandidates/utils/agent';
 import { scrapData } from '../IndividualCandidates/utils/scraper';
 import { overall_agent } from '../../agents/overall_agent';
-import { getFullContextForCompression } from '../IndividualCandidates/utils/storage';
+import { getFullContextForCompression, updateGlobalStorage } from '../IndividualCandidates/utils/storage';
+
+// Dummy Data Imports
+import resumeDummy from './results/resume_agent_result.json';
+import portfolioDummy from './results/portfolio_agent_result.json';
+import leetcodeDummy from './results/leetcode_agent_result.json';
+import executiveDummy from './results/executive_result_agent.json';
 
 export type UploadedItem = { 
   id: string; 
@@ -14,81 +20,13 @@ export type UploadedItem = {
   content?: string; 
 };
 
-function IndividualCandidate({ selectedCandidate, onBack }: any) {
+function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any) {
   const [items, setItems] = useState<UploadedItem[]>([]);
   const [aiResults, setAiResults] = useState<{ domain: string; content: string }[]>([]);
   const [overallResult, setOverallResult] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showGrid, setShowGrid] = useState(false); // Controls the view swap
+  const [showGrid, setShowGrid] = useState(true); 
   const [activeView, setActiveView] = useState<{ type: 'url' | 'file'; content: string } | null>(null);
-
-  const [resumeResult, setResumeResult] = useState<any>(null);
-  const [portfolioResult, setPortfolioResult] = useState<any>(null);
-  const [leetcodeResult, setLeetcodeResult] = useState<any>(null);
-
-  const hasInitiated = useRef(false);
-
-  useEffect(() => {
-    if (selectedCandidate && !hasInitiated.current) {
-      hasInitiated.current = true;
-      triggerSequentialAnalysis();
-    }
-  }, [selectedCandidate]);
-
-  const triggerSequentialAnalysis = async () => {
-    console.log("Started analysing")
-    setIsAnalyzing(true);
-    console.log("📡 INITIALIZING_SEQUENTIAL_UPLINK...");
-
-    try {
-      // 1. RESUME_AGENT
-      const resumeItem = items.find(i => i.name.toLowerCase().includes('resume'));
-      if (resumeItem?.content) {
-        console.log("Step 1: Analyzing Resume...");
-        const res = await agent({ resume: resumeItem.content });
-        setResumeResult(res);
-      }
-
-      // 2. PORTFOLIO_AGENT
-      const portfolioItem = items.find(i => i.type === 'url' && !i.name.includes('leetcode'));
-      if (portfolioItem) {
-        console.log("Step 2: Analyzing Portfolio...");
-        const scrap = await scrapData(portfolioItem.name);
-        if (scrap.success) {
-          const res = await agent({ portfolio: portfolioItem.content ?? "" });
-          setPortfolioResult(res);
-        }
-      }
-
-      // 3. LEETCODE_AGENT
-      const leetcodeItem = items.find(i => i.name.includes('leetcode'));
-      if (leetcodeItem) {
-        console.log("Step 3: Analyzing LeetCode...");
-        const scrap = await scrapData(leetcodeItem.name);
-        if (scrap.success) {
-          // Assuming you have a specific leetcode_agent or common agent util
-          const res = await agent({ leetcode: scrap.data ?? "" });
-          setLeetcodeResult(res);
-        }
-      }
-
-      // 4. OVERALL_AGENT
-      console.log("Step 4: Synthesizing Overall Verdict...");
-      const fullStoreRaw = getFullContextForCompression();
-      if (fullStoreRaw) {
-        const fullStore = JSON.parse(fullStoreRaw);
-        const summary = await overall_agent(fullStore.analyses);
-        setOverallResult(summary);
-      }
-
-      console.log("✅ ALL_SYSTEMS_SYNCHRONIZED");
-    } catch (e) {
-      console.error("UPLINK_INTERRUPTED", e);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-  
 
   const addItem = (name: string, type: 'file' | 'url', content?: string) => {
     setItems((prev) => {
@@ -97,53 +35,48 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
     });
   };
 
-  const runAnalysis = async () => {
-    if (items.length === 0) return;
-    
-    setShowGrid(true); // Switch middle view to Grid immediately
+  const loadDummyData = () => {
     setIsAnalyzing(true);
-    setAiResults([]);
-    setOverallResult(null); 
 
-    for (const item of items) {
-      let dataToAnalyze = "";
-      let label = item.name;
-      try {
-        if (item.type === 'file') {
-          dataToAnalyze = item.content || "";
-        } else {
-          const result = await scrapData(item.name);
-          if (result.success && result.data) {
-            dataToAnalyze = result.data;
-            label = new URL(item.name).hostname.replace('www.', '');
-          }
-        }
-        if (dataToAnalyze) {
-          console.log("All labels ", label)
-          const report = await agent({ [label]: dataToAnalyze });
-          setAiResults((prev) => [...prev, { domain: label, content: report }]);
-        }
-      } catch (e) { console.error(`Failed: ${item.name}`, e); }
-    }
+    const dummyPayload = [
+      { domain: 'resume', content: JSON.stringify(resumeDummy) },
+      { domain: 'portfolio', content: JSON.stringify(portfolioDummy) },
+      { domain: 'leetcode', content: JSON.stringify(leetcodeDummy) }
+    ];
 
-    try {
-      const fullStoreRaw = getFullContextForCompression();
-      if (fullStoreRaw) {
-        const fullStore = JSON.parse(fullStoreRaw);
-        if (fullStore.analyses?.length > 0) {
-          const summary = await overall_agent(fullStore.analyses);
-          setOverallResult(summary);
-        }
-      }
-    } catch (e) { console.error("Overall Analysis failed", e); }
+    setAiResults(dummyPayload);
+    setOverallResult(executiveDummy.executive_verdict);
+
+    // Persist to storage for the RightSection AI context
+    updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeDummy));
+    updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
+    updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
+
     setIsAnalyzing(false);
   };
 
+  useEffect(() => {
+    if (selectedCandidate) {
+      const USE_DUMMY = true; 
+      if (USE_DUMMY) {
+        loadDummyData();
+      } 
+    }
+  }, [selectedCandidate]);
+
+  const runAnalysis = async () => {
+    setShowGrid(true);
+    // Logic for non-dummy analysis would trigger here
+  };
+
   return (
-    
     <div style={styles.appShell}>
-      <button onClick={onBack} style={styles.backBtn}>← GALLERY</button>
+      {/* Back Navigation */}
+      <button onClick={onBack} style={styles.backBtn}>
+        ← GALLERY
+      </button>
       
+      {/* Left Navigation: Fixed width for sources */}
       <LeftSection 
         items={items} 
         onAdd={addItem} 
@@ -151,34 +84,78 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
         isAnalyzing={isAnalyzing} 
         selectedCandidate={selectedCandidate}
         onViewSource={(type, content) => {
-          setShowGrid(false); // Switch back to viewer when a source is clicked
+          setShowGrid(false);
           setActiveView({ type, content });
         }}
       />
-      <div style={{flex: 1}}>
-      <MiddleSection 
-        results ={
-          [
-            { domain: 'resume', content: resumeResult },
-            { domain: 'portfolio', content: portfolioResult },
-            { domain: 'leetcode', content: leetcodeResult }
-          ]
-        }
-        overallResult={overallResult}
-        isLoading={isAnalyzing} 
-        selectedCandidate={selectedCandidate}
-        activeView={activeView}
-        showGrid={showGrid}
-      />
+
+      {/* Middle Workspace: Flexible Area */}
+      <div style={styles.middleContainer}>
+        <MiddleSection 
+          results={aiResults} 
+          overallResult={overallResult}
+          isLoading={isAnalyzing} 
+          selectedCandidate={selectedCandidate}
+          activeView={activeView}
+          showGrid={showGrid}
+        />
       </div>
-      <RightSection />
+
+      {/* Right Collaboration Section: Expanded Presence */}
+      <div style={styles.rightContainer}>
+        <RightSection jobDescription={jobDescription} />
+      </div>
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  appShell: { display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#09090b', overflow: 'hidden', position: 'relative' },
-  backBtn: { position: 'absolute', top: '20px', right: '20px', zIndex: 100, padding: '8px 16px', background: '#be185d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }
+  appShell: { 
+    display: 'flex', 
+    height: '100vh', 
+    width: '100vw', 
+    backgroundColor: '#09090b', 
+    overflow: 'hidden', 
+    position: 'relative',
+    fontFamily: '"Roboto", sans-serif'
+  },
+  middleContainer: {
+    flex: 1, 
+    minWidth: '0', 
+    display: 'flex',
+    flexDirection: 'column',
+    borderRight: '1px solid #1e293b',
+    backgroundColor: '#020617'
+  },
+  rightContainer: {
+    width: '460px', // Increased space for the Neural Collab chat
+    flexShrink: 0,
+    backgroundColor: '#09090b',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  backBtn: { 
+    position: 'absolute', 
+    top: '16px',        // Spacing from top edge
+    right: '16px',      // Spacing from right edge (Extreme Right)
+    zIndex: 1000,       // Ensure it is above the RightSection header
+    
+    // Aesthetic Updates for "Extreme Right" placement
+    padding: '8px 14px', 
+    background: 'rgba(190, 24, 93, 0.9)', // Slight transparency
+    backdropFilter: 'blur(4px)',          // Neural glass effect
+    color: '#fff', 
+    border: '1px solid rgba(255, 255, 255, 0.1)', 
+    borderRadius: '4px', 
+    cursor: 'pointer', 
+    fontSize: '10px', 
+    fontWeight: 900,
+    fontFamily: 'monospace',
+    letterSpacing: '1px',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+    transition: 'all 0.2s ease'
+  }
+  
 };
 
 export default IndividualCandidate;

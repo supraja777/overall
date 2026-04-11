@@ -6,6 +6,7 @@ interface ResumeTopProps {
 }
 
 const ResumeTop = ({ matchScore = 0, topSkills = [] }: ResumeTopProps) => {
+  console.log("in resume top", matchScore)
   const radius = 34; 
   const circumference = 2 * Math.PI * radius;
   const safeScore = Math.min(Math.max(matchScore, 0), 100);

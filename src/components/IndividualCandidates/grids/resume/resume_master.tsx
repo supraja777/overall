@@ -5,6 +5,7 @@ import ResumeAnalysis from './resume_analysis';
 const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) => {
   const parsedData = useMemo(() => {
     if (!data) return null;
+    console.log("data in grid", data)
     try {
       // Logic to handle both raw objects and JSON strings from the API
       const raw = data.content ? data.content : data;

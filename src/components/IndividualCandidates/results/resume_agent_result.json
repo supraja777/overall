@@ -1,0 +1,30 @@
+{
+  "match_percentage": 92,
+  "top_8_skills": ["Java", "Distributed Systems", "Spring Boot", "MySQL", "C++", "AWS", "Redis", "Microservices"],
+  "detailed_experience": [
+    {
+      "company": "Thoughtworks",
+      "role": "Software Engineer",
+      "duration": "Aug 2022 - July 2024",
+      "highlights": [
+        "Optimized payment latency by 75ms through distributed caching strategies.",
+        "Architected microservices for high-concurrency fintech transactions.",
+        "Reduced database query overhead by 40% using specialized indexing.",
+        "Collaborated on global distributed systems infrastructure for scaling."
+      ],
+      "skills_used": ["Java", "Spring Boot", "Kafka", "PostgreSQL", "Redis"]
+    }
+  ],
+  "detailed_education": [
+    {
+      "institution": "University of Cincinnati",
+      "degree": "MS in Computer Science",
+      "timeline": "2024 - 2026",
+      "cgpa": "3.9/4.0",
+      "key_courses": ["Advanced Algorithms", "Distributed Systems", "Cloud Computing"]
+    }
+  ],
+  "relevant_skills_to_jd": ["Java", "Spring Boot", "Microservices", "Redis", "Latency Optimization", "PostgreSQL", "Distributed Systems", "AWS", "Algorithmic Problem Solving", "System Design"],
+  "technical_complexity_rating": "9/10",
+  "quick_verdict": "Exceptional backend engineer with a proven track record in high-performance distributed systems. Strong academic foundation and specialized experience in latency reduction."
+}

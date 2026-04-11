@@ -28,7 +28,7 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
     <div style={styles.sidebar}>
      <div>
         <CandidateProfile 
-        name="Supraja Srikanth" 
+        name= {selectedCandidate.name} 
         email="supraja@uc.edu" 
         phone="+1 513 000 0000" 
       />

@@ -1,0 +1,28 @@
+{
+  "overall_portfolio_strength": "High",
+  "match_percentage": 88,
+  "main_projects": [
+    {
+      "title": "Adaptable Phone UI Hackathon",
+      "tech_stack": ["React", "Vite", "Generative UI"],
+      "description": "A context-aware mobile UI that dynamically adapts themes and app availability based on user routines.",
+      "technical_depth": "Implemented complex state-based routing and context-switching logic to handle real-time UI adaptation.",
+      "impact": "Winner of departmental innovation award; optimized UI response time to under 100ms.",
+      "jd_relevance_score": 85
+    },
+    {
+      "title": "LeetCode Analysis Pipeline",
+      "tech_stack": ["Python", "Crawl4AI", "Groq API"],
+      "description": "Automated pipeline to crawl and analyze competitive programming metrics.",
+      "technical_depth": "Built a robust scraping and parsing engine capable of handling dynamic LeetCode DOM structures.",
+      "impact": "Automated the evaluation of 500+ candidate profiles.",
+      "jd_relevance_score": 90
+    }
+  ],
+  "tech_stack_summary": {
+    "languages": ["Java", "C++", "Python", "TypeScript"],
+    "frameworks": ["Spring Boot", "React", "Node.js"],
+    "infrastructure": ["AWS", "Docker", "Redis"]
+  },
+  "portfolio_verdict": "Projects demonstrate a deep understanding of data scraping and real-time UI adaptation. Strong evidence of backend logic complexity and tool-building capabilities."
+}

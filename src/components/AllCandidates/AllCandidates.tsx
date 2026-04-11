@@ -3,7 +3,7 @@ import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
 
-const AllCandidates = ({ candidates, onSave, onSelect }: any) => {
+const AllCandidates = ({ jobDescription, setJobDescription, candidates, onSave, onSelect }: any) => {
   return (
     <div style={styles.viewPort}>
       <style>
@@ -44,7 +44,10 @@ const AllCandidates = ({ candidates, onSave, onSelect }: any) => {
             <span style={styles.panelLabel}>DATA_SYNTHESIS</span>
           </div>
           <div className="hide-scrollbar" style={styles.scrollContent}>
-            <RightSection />
+            <RightSection 
+            jobDescription = {jobDescription}
+            setJobDescription = {setJobDescription}
+            />
           </div>
         </aside>
 

@@ -1,4 +1,4 @@
-export const conversation_agent = (history: { role: 'recruiter' | 'ai', content: string }[]) => {
+export const conversation_agent = (history: { role: 'recruiter' | 'ai' | 'system', content: string }[]) => {
   // Format the history into a readable string for the LLM
   const formattedHistory = history
     .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)

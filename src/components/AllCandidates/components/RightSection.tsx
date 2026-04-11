@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 
-const RightSection = () => {
-  const [jobDesc, setJobDesc] = useState('');
+const RightSection = ({jobDescription, setJobDescription}) => {
   const [submitted, setSubmitted] = useState('');
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (jobDesc.trim()) {
-        setSubmitted(jobDesc.trim());
-        setJobDesc('');
-      }
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     if (jobDescription.trim()) {
+  //       setSubmitted(jobDescription.trim());
+  //       setJobDescription('');
+  //     }
+  //   }
+  // };
 
   const handleSubmit = () => {
-    if (jobDesc.trim()) {
-      setSubmitted(jobDesc.trim());
-      setJobDesc('');
+    if (jobDescription.trim()) {
+      setJobDescription(jobDescription);
+      setSubmitted(jobDescription.trim());
     }
   };
 
@@ -35,9 +34,8 @@ const RightSection = () => {
 
         <textarea
           style={styles.textarea}
-          value={jobDesc}
-          onChange={e => setJobDesc(e.target.value)}
-          onKeyDown={handleKeyDown}
+          value={jobDescription}
+          onChange={e => setJobDescription(e.target.value)}
           placeholder="e.g. We're looking for a Senior React Engineer..."
           rows={6}
         />
@@ -47,11 +45,11 @@ const RightSection = () => {
           <button
             style={{ 
               ...styles.submitBtn, 
-              opacity: jobDesc.trim() ? 1 : 0.3, 
-              cursor: jobDesc.trim() ? 'pointer' : 'not-allowed' 
+              opacity: jobDescription.trim() ? 1 : 0.3, 
+              cursor: jobDescription.trim() ? 'pointer' : 'not-allowed' 
             }}
             onClick={handleSubmit}
-            disabled={!jobDesc.trim()}
+            disabled={!jobDescription.trim()}
           >
             INITIALIZE
           </button>

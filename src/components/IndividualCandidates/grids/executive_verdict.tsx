@@ -7,11 +7,6 @@ const ExecutiveVerdict = ({ summary }: any) => {
         <div style={styles.badge}>HIRE_RECOMMENDATION</div>
       </div>
       <p style={styles.summaryText}>{summary || "Synthesizing full candidate profile across all technical domains..."}</p>
-      
-      <div style={styles.nextSteps}>
-        <span style={styles.stepHeader}>SUGGESTED_NEXT_ACTION:</span>
-        <div style={styles.stepItem}>Deep-dive into System Design & Concurrency.</div>
-      </div>
     </div>
   );
 };

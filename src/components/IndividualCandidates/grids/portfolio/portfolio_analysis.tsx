@@ -1,6 +1,7 @@
 import React from 'react';
 
 const PortfolioAnalysis = ({ verdict = "", projects = [] }: any) => {
+  console.log("Projects in analusis ", projects)
   return (
     <div style={styles.container}>
       <style>

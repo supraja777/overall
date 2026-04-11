@@ -13,6 +13,7 @@ export interface Candidate {
 }
 
 function App() {
+  const [jobDescription, setJobDescription] = useState<string>("");
   const [isIndividualView, setIsIndividualView] = useState(false);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -33,11 +34,14 @@ function App() {
     <div style={{ height: '100vh', width: '100vw' }}>
       {isIndividualView ? (
         <IndividualCandidate 
+          jobDescription = {jobDescription}
           selectedCandidate={selectedCandidate} 
           onBack={() => setIsIndividualView(false)} 
         />
       ) : (
         <AllCandidates 
+          jobDescription = {jobDescription}
+          setJobDescription = {setJobDescription}
           candidates={candidates} 
           onSave={handleSaveCandidate} 
           onSelect={handleSelectCandidate} // Pass the handler here

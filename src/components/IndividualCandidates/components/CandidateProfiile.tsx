@@ -26,10 +26,10 @@ const CandidateProfile = ({ name, photoUrl, email, phone }: CandidateProfileProp
         </div>
       </div>
 
-      <div style={styles.contactStack}>
+      {/* <div style={styles.contactStack}>
         <span style={styles.infoValue}>{email}</span>
         <span style={styles.infoValue}>{phone}</span>
-      </div>
+      </div> */}
     </div>
   );
 };

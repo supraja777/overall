@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import CandidateInformation from './candidateInformation';
 import ResumeGrid from '../grids/resume/resume_master';
-import PortfolioTop from '../grids/portfolio_top';
-import LeetCodeTop from '../grids/leetcode_top';
 import ExecutiveTop from '../grids/executive_top';
-import PortfolioAnalysis from '../grids/portfolio_analysis';
-import LeetCodeAnalysis from '../grids/leetcode_analysis';
 import ExecutiveVerdict from '../grids/executive_verdict';
+import PortfolioMaster from '../grids/portfolio/portfolio_masters';
+import LeetCodeMaster from '../grids/leetcode/leetcode_master';
 
 const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, showGrid, isLoading }: any) => {
   const [expandedTile, setExpandedTile] = useState<number | null>(null);
-
   const renderTile = (index: number, title: string, content: any, label: string) => {
     const isExpanded = expandedTile === index;
     if (expandedTile !== null && !isExpanded) return null;
@@ -94,24 +91,28 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
           <div style={styles.gridContent}>
             <div style={styles.grid}>
               {renderTile(0, "RESUME ALIGNMENT", (
+                <div>
+                 
                 <ResumeGrid 
                   data={results?.find((r: any) => r.domain.toLowerCase().includes('resume'))} 
                   isExpanded={expandedTile === 0} 
                 />
+                </div>
               ), "PDF_CORE")}
 
               {renderTile(1, "PROJECT DEPTH", (
-                <>
-                  <PortfolioTop />
-                  <PortfolioAnalysis data={results?.find((r: any) => r.domain === 'portfolio')} />
-                </>
+                <PortfolioMaster 
+                  data={results?.find((r: any) => r.domain.toLowerCase().includes('portfolio'))}
+                  isExpanded={expandedTile === 0}
+                />
+                 
               ), "WEB_PORTFOLIO")}
 
               {renderTile(2, "PROBLEM SOLVING", (
-                <>
-                  <LeetCodeTop />
-                  <LeetCodeAnalysis data={results?.find((r: any) => r.domain === 'leetcode')} />
-                </>
+                <LeetCodeMaster
+                data={results?.find((r: any) => r.domain === 'leetcode')}
+                isExpanded = {expandedTile === 0}
+                />
               ), "LEETCODE_STATS")}
 
               {renderTile(3, "EXECUTIVE VERDICT", (

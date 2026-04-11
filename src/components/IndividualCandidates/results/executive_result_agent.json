@@ -1,0 +1,14 @@
+{
+  "candidate_name": "Supraja Srikanth",
+  "final_match_score": 90,
+  "strengths": [
+    "Proven latency optimization experience at Thoughtworks",
+    "Elite algorithmic foundation (450+ LeetCode problems)",
+    "Strong background in Distributed Systems and Java"
+  ],
+  "potential_risks": [
+    "Currently finishing MS; may require specific start-date alignment."
+  ],
+  "interview_strategy": "Focus on deep system design questions regarding Redis caching and microservices scalability.",
+  "executive_verdict": "Highly recommended for SDE role. Combines rare industrial experience in distributed systems with top-tier competitive programming skills."
+}

@@ -1,0 +1,21 @@
+{
+  "profile_summary": {
+    "username": "Supraja_Sri",
+    "total_solved": 450,
+    "ranking": "Top 5%",
+    "contest_rating": 1850
+  },
+  "problem_breakdown": {
+    "easy": 100,
+    "medium": 280,
+    "hard": 70
+  },
+  "top_topics": ["Dynamic Programming", "Graphs", "Binary Search", "Trees"],
+  "language_proficiency": {
+    "C++": "85%",
+    "Java": "10%",
+    "Python": "5%"
+  },
+  "algorithmic_consistency": "High",
+  "quick_verdict": "Demonstrates elite problem-solving speed and depth, particularly in Medium and Hard categories using C++. Highly prepared for technical interviews."
+}
