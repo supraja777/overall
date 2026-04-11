@@ -19,32 +19,20 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
   const [aiResults, setAiResults] = useState<{ domain: string; content: string }[]>([]);
   const [overallResult, setOverallResult] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  
-  // NEW: State to track what the middle section is showing
-  const [activeView, setActiveView] = useState<{ type: 'url' | 'file' | 'analysis'; content: string | null }>({
-    type: 'analysis', // Default view
-    content: null
-  });
+  const [showGrid, setShowGrid] = useState(false); // Controls the view swap
+  const [activeView, setActiveView] = useState<{ type: 'url' | 'file'; content: string } | null>(null);
 
   const addItem = (name: string, type: 'file' | 'url', content?: string) => {
     setItems((prev) => {
       if (prev.some(item => item.name === name)) return prev;
-      const newItem: UploadedItem = { 
-        id: Math.random().toString(36).substring(7), 
-        name, 
-        type, 
-        content 
-      };
-      return [newItem, ...prev];
+      return [{ id: Math.random().toString(36).substring(7), name, type, content }, ...prev];
     });
   };
 
   const runAnalysis = async () => {
     if (items.length === 0) return;
     
-    // Switch view to ANALYSIS mode immediately when starting
-    setActiveView({ type: 'analysis', content: null });
-    
+    setShowGrid(true); // Switch middle view to Grid immediately
     setIsAnalyzing(true);
     setAiResults([]);
     setOverallResult(null); 
@@ -66,9 +54,7 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
           const report = await agent({ [label]: dataToAnalyze });
           setAiResults((prev) => [...prev, { domain: label, content: report }]);
         }
-      } catch (e) {
-        console.error(`Failed: ${item.name}`, e);
-      }
+      } catch (e) { console.error(`Failed: ${item.name}`, e); }
     }
 
     try {
@@ -80,15 +66,8 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
           setOverallResult(summary);
         }
       }
-    } catch (e) {
-      console.error("Overall Analysis failed", e);
-    }
+    } catch (e) { console.error("Overall Analysis failed", e); }
     setIsAnalyzing(false);
-  };
-
-  // Handler for when a source is clicked in LeftSection
-  const handleViewSource = (type: 'file' | 'url', content: string) => {
-    setActiveView({ type, content });
   };
 
   return (
@@ -101,7 +80,10 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
         onRun={runAnalysis} 
         isAnalyzing={isAnalyzing} 
         selectedCandidate={selectedCandidate}
-        onViewSource={handleViewSource} // Pass this to LeftSection
+        onViewSource={(type, content) => {
+          setShowGrid(false); // Switch back to viewer when a source is clicked
+          setActiveView({ type, content });
+        }}
       />
 
       <MiddleSection 
@@ -109,7 +91,8 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
         overallResult={overallResult}
         isLoading={isAnalyzing} 
         selectedCandidate={selectedCandidate}
-        activeView={activeView} // Pass the view state
+        activeView={activeView}
+        showGrid={showGrid}
       />
 
       <RightSection />
