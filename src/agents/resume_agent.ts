@@ -1,6 +1,6 @@
 /**
  * Specialist Agent: Resume Analyst
- * Self-executing agent that returns structured JSON for the UI.
+ * Enhanced to extract granular professional and academic history.
  */
 export const resume_agent = {
   process: async (resumeData: string): Promise<string> => {
@@ -17,9 +17,10 @@ export const resume_agent = {
       - Proven track record of improving system performance and scalability.
     `;
 
-    const systemPrompt = `You are a Senior Technical Recruiter. 
-    Analyze the resume against the JD. You MUST return a valid JSON object.
-    Identify specific high-impact technical wins.`;
+    const systemPrompt = `You are an expert Technical Architect and Recruiter. 
+    Analyze the resume with extreme attention to technical detail. 
+    You MUST return a valid JSON object. 
+    Ensure experience and education are structured as objects for detailed UI rendering.`;
 
     const userPrompt = `
       JOB DESCRIPTION: 
@@ -32,8 +33,24 @@ export const resume_agent = {
       {
         "match_percentage": number,
         "top_8_skills": ["string"],
-        "experience_history": ["Company Name - (Dates)"],
-        "education_history": ["School Name - (Dates)"],
+        "detailed_experience": [
+          {
+            "company": "string",
+            "role": "string",
+            "duration": "string",
+            "highlights": ["3-4 bullet points of specific technical work"],
+            "skills_used": ["specific tech stack used at this company"]
+          }
+        ],
+        "detailed_education": [
+          {
+            "institution": "string",
+            "degree": "string",
+            "timeline": "string",
+            "cgpa": "string or null",
+            "key_courses": ["relevant technical subjects"]
+          }
+        ],
         "relevant_skills_to_jd": ["10 specific matches"],
         "technical_complexity_rating": "1-10 string",
         "quick_verdict": "2-sentence high-level summary"
@@ -49,28 +66,27 @@ export const resume_agent = {
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
-          // Force JSON mode
           response_format: { type: "json_object" }, 
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt }
           ],
-          temperature: 0.1, // Deterministic for structured data
-          max_tokens: 2048 
+          temperature: 0.1, 
+          max_tokens: 3000 // Increased to accommodate more detailed text
         })
       });
 
       if (!response.ok) throw new Error("Groq API Failure");
 
       const result = await response.json();
-      console.log("Result", result)
+      console.log("Detailed Analysis Result:", result);
       return result?.choices?.[0]?.message?.content || "{}";
       
     } catch (error) {
       console.error("Resume Specialist Error:", error);
       return JSON.stringify({ 
         match_percentage: 0, 
-        quick_verdict: "Neural processor failed to parse resume data." 
+        quick_verdict: "Critical failure: Neural parser could not synthesize detailed history." 
       });
     }
   }

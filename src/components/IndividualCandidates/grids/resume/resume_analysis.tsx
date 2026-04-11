@@ -1,100 +1,308 @@
-import React, { useState } from 'react';
-import ResumeTop from './resume_top';
+import React from 'react';
+
+interface Experience {
+  company: string;
+  role: string;
+  duration: string;
+  highlights: string[];
+  skills_used: string[];
+}
+
+interface Education {
+  institution: string;
+  degree: string | null;
+  timeline: string;
+  cgpa: string | null;
+  key_courses: string[];
+}
 
 interface ResumeAnalysisProps {
-  matchScore?: number;
   neuralValidation?: string;
-  experienceHistory?: string[];
-  topSkills?: string[];
+  detailedExperience?: Experience[];
+  detailedEducation?: Education[];
 }
 
 const ResumeAnalysis = ({ 
-  matchScore = 0, 
   neuralValidation = "Neural sync in progress...", 
-  experienceHistory = [], 
-  topSkills = [] 
+  detailedExperience = [], 
+  detailedEducation = [] 
 }: ResumeAnalysisProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+  
   return (
-    <div 
-      style={isExpanded ? styles.cardExpanded : styles.cardCollapsed} 
-      onClick={() => setIsExpanded(!isExpanded)}
-    >
-      {/* HEADER SECTION: Always visible */}
-      <ResumeTop matchScore={matchScore} topSkills={topSkills} />
+    <div style={styles.container}>
+      <style>
+        {`
+          .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+          }
+          .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 10px;
+          }
+          .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(190, 24, 93, 0.3);
+            border-radius: 10px;
+          }
+          .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #be185d;
+            box-shadow: 0 0 10px #be185d;
+          }
+        `}
+      </style>
 
-      {/* EXPANDABLE SECTION: Hidden by default */}
-      {isExpanded && (
-        <div style={styles.expandedContent}>
-          <div style={styles.divider} />
-          
-          <div style={styles.section}>
+      <div style={styles.scrollWrapper} className="custom-scroll">
+        
+        {/* 1. NEURAL REPORT */}
+        <div style={styles.section}>
+          <div style={styles.highlightHeader}>
             <span style={styles.label}>NEURAL_REPORT</span>
-            <p style={styles.validationText}>{neuralValidation}</p>
           </div>
+          <p style={styles.validationText}>{neuralValidation}</p>
+        </div>
 
-          <div style={styles.section}>
-            <span style={styles.label}>EXPERIENCE_LOG</span>
-            <div style={styles.list}>
-              {experienceHistory.length > 0 ? (
-                experienceHistory.map((item, index) => (
-                  <div key={index} style={styles.listItem}>
-                    <span style={styles.dot}>•</span> {item}
+        <div style={styles.divider} />
+
+        {/* 2. EXPERIENCE TIMELINE */}
+        <div style={styles.section}>
+          <div style={styles.highlightHeader}>
+            <span style={styles.label}>EXPERIENCE_TIMELINE</span>
+          </div>
+          <div style={styles.list}>
+            {detailedExperience && detailedExperience.length > 0 ? (
+              detailedExperience.map((exp, idx) => (
+                <div key={idx} style={styles.experienceBlock}>
+                  <div style={styles.entryHeader}>
+                    <span style={styles.companyName}>{exp.company?.toUpperCase()}</span>
+                    <span style={styles.durationTag}>{exp.duration}</span>
                   </div>
-                ))
-              ) : (
-                <div style={styles.listItem}>NO_HISTORY_DETECTED</div>
-              )}
-            </div>
+                  <div style={styles.roleTitle}>{exp.role}</div>
+                  
+                  <ul style={styles.highlightsList}>
+                    {exp.highlights?.map((item, i) => (
+                      <li key={i} style={styles.highlightItem}>{item}</li>
+                    ))}
+                  </ul>
+
+                  {exp.skills_used && exp.skills_used.length > 0 && (
+                    <div style={styles.skillTagContainer}>
+                      {exp.skills_used.map((skill, i) => (
+                        <span key={i} style={styles.miniTag}>{skill}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div style={styles.emptyText}>NO_PROFESSIONAL_HISTORY_DETECTED</div>
+            )}
           </div>
         </div>
-      )}
 
-      {/* INTERACTION HINT */}
-      <div style={styles.footer}>
-        <span style={styles.footerText}>
-          {isExpanded ? 'CLICK_TO_COLLAPSE' : 'CLICK_TO_EXPAND_METRICS'}
-        </span>
+        <div style={styles.divider} />
+
+        {/* 3. ACADEMIC RECORDS */}
+        <div style={styles.section}>
+          <div style={styles.highlightHeader}>
+            <span style={styles.label}>ACADEMIC_RECORDS</span>
+          </div>
+          <div style={styles.list}>
+            {detailedEducation && detailedEducation.length > 0 ? (
+              detailedEducation.map((edu, idx) => (
+                <div key={idx} style={styles.eduBlock}>
+                  <div style={styles.entryHeader}>
+                    <span style={styles.schoolName}>{edu.institution}</span>
+                    <span style={styles.durationTag}>{edu.timeline}</span>
+                  </div>
+                  
+                  <div style={styles.degreeRow}>
+                    <span style={styles.degreeText}>{edu.degree}</span>
+                    {edu.cgpa && (
+                      <span style={styles.cgpaBadge}>GPA: {edu.cgpa}</span>
+                    )}
+                  </div>
+
+                  {edu.key_courses && edu.key_courses.length > 0 && (
+                    <div style={styles.courseworkWrapper}>
+                      <span style={styles.subLabel}>RELEVANT_COURSEWORK: </span>
+                      <span style={styles.courseList}>{edu.key_courses.join(", ")}</span>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div style={styles.emptyText}>NO_ACADEMIC_DATA_AVAILABLE</div>
+            )}
+          </div>
+        </div>
+
+        <div style={{ height: '40px', flexShrink: 0 }} />
       </div>
     </div>
   );
 };
 
-const styles = {
-  cardCollapsed: {
-    backgroundColor: 'transparent',
+const styles: Record<string, React.CSSProperties> = {
+  container: { 
+    width: '100%', 
+    height: '100%', 
+    overflow: 'hidden',
     display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '20px',
-    cursor: 'pointer',
+    flexDirection: 'column'
+  },
+  scrollWrapper: { 
+    flex: 1,
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '32px', 
+    overflowY: 'auto',
+    paddingRight: '12px' 
+  },
+  divider: { 
+    height: '1px', 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
     width: '100%',
-    padding: '0px',
+    flexShrink: 0 
   },
-  cardExpanded: {
-    backgroundColor: 'transparent',
+  section: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '16px' 
+  },
+  highlightHeader: {
+    background: 'rgba(30, 41, 59, 0.5)',
+    padding: '4px 12px',
+    borderRadius: '4px',
+    borderLeft: '3px solid #be185d',
+    alignSelf: 'flex-start'
+  },
+  label: { 
+    fontSize: '11px', 
+    fontWeight: 900, 
+    color: '#f8fafc', 
+    fontFamily: 'var(--font-mono)', 
+    letterSpacing: '2.5px' 
+  },
+  validationText: { 
+    fontSize: '13px', 
+    color: '#94a3b8', 
+    lineHeight: '1.6', 
+    margin: 0,
+    paddingLeft: '4px'
+  },
+  list: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '24px' 
+  },
+  experienceBlock: { 
+    borderLeft: '1px solid rgba(190, 24, 93, 0.3)', 
+    paddingLeft: '16px', 
+    position: 'relative' 
+  },
+  entryHeader: { 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    marginBottom: '4px' 
+  },
+  companyName: { 
+    fontSize: '12px', 
+    color: '#be185d', 
+    fontFamily: 'var(--font-mono)', 
+    fontWeight: 600,
+    letterSpacing: '1px' 
+  },
+  durationTag: { 
+    fontSize: '10px', 
+    color: '#475569',
+    fontFamily: 'var(--font-mono)' 
+  },
+  roleTitle: { 
+    fontSize: '14px', 
+    color: '#f1f5f9', 
+    fontWeight: 500, 
+    marginBottom: '8px' 
+  },
+  highlightsList: { 
+    margin: '8px 0', 
+    paddingLeft: '18px', 
+    color: '#94a3b8', 
+    fontSize: '12px',
     display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '20px',
-    cursor: 'pointer',
-    width: '100%',
-    padding: '0px',
+    flexDirection: 'column',
+    gap: '6px'
   },
-  expandedContent: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '20px',
-    animation: 'fadeIn 0.2s ease-out',
+  highlightItem: { 
+    lineHeight: '1.4' 
   },
-  divider: { height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.05)', width: '100%' },
-  section: { display: 'flex', flexDirection: 'column' as const, gap: '8px' },
-  label: { fontSize: '9px', fontWeight: 800, color: '#475569', fontFamily: 'var(--font-mono)', letterSpacing: '1.5px' },
-  validationText: { fontSize: '13px', color: '#94a3b8', lineHeight: '1.6', margin: 0 },
-  list: { display: 'flex', flexDirection: 'column' as const, gap: '8px' },
-  listItem: { fontSize: '12px', color: '#cbd5e1', fontFamily: 'var(--font-mono)', display: 'flex', gap: '8px' },
-  dot: { color: '#be185d' },
-  footer: { marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.03)', paddingTop: '12px', textAlign: 'center' as const },
-  footerText: { fontSize: '8px', color: '#334155', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }
+  skillTagContainer: { 
+    display: 'flex', 
+    flexWrap: 'wrap', 
+    gap: '6px', 
+    marginTop: '12px' 
+  },
+  miniTag: { 
+    fontSize: '9px', 
+    background: 'rgba(190, 24, 93, 0.05)', 
+    color: '#be185d', 
+    padding: '2px 8px', 
+    borderRadius: '4px', 
+    border: '1px solid rgba(190, 24, 93, 0.2)',
+    fontFamily: 'var(--font-mono)'
+  },
+  eduBlock: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8px',
+    paddingLeft: '4px'
+  },
+  schoolName: { 
+    fontSize: '14px', 
+    color: '#f1f5f9', 
+    fontWeight: 600 
+  },
+  degreeRow: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '12px' 
+  },
+  degreeText: { 
+    fontSize: '12px', 
+    color: '#94a3b8' 
+  },
+  cgpaBadge: { 
+    fontSize: '10px', 
+    color: '#10b981', 
+    background: 'rgba(16, 185, 129, 0.1)', 
+    padding: '2px 8px', 
+    borderRadius: '4px', 
+    border: '1px solid rgba(16, 185, 129, 0.2)',
+    fontFamily: 'var(--font-mono)' 
+  },
+  courseworkWrapper: { 
+    marginTop: '4px', 
+    padding: '10px', 
+    background: 'rgba(255, 255, 255, 0.02)', 
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.03)' 
+  },
+  subLabel: { 
+    fontSize: '9px', 
+    color: '#475569', 
+    fontFamily: 'var(--font-mono)',
+    display: 'block',
+    marginBottom: '4px' 
+  },
+  courseList: { 
+    fontSize: '11px', 
+    color: '#64748b', 
+    lineHeight: '1.4' 
+  },
+  emptyText: { 
+    fontSize: '11px', 
+    color: '#334155', 
+    fontFamily: 'var(--font-mono)' 
+  }
 };
 
 export default ResumeAnalysis;

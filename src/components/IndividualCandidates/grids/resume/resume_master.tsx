@@ -3,7 +3,6 @@ import ResumeTop from './resume_top';
 import ResumeAnalysis from './resume_analysis';
 
 const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) => {
-  console.log(data)
   const parsedData = useMemo(() => {
     if (!data) return null;
     try {
@@ -22,9 +21,7 @@ const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) =>
 
   return (
     <div style={containerStyle}>
-      {/* 1. THE HEADER: Ring & Top 10 Skills 
-          Note: We pass parsedData.match_percentage and parsedData.top_skills 
-      */}
+      {/* 1. THE HEADER: Score Ring & Top Skills */}
       <div style={styles.fixedHeader}>
         <ResumeTop 
           matchScore={parsedData.match_percentage} 
@@ -32,64 +29,82 @@ const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) =>
         />
       </div>
       
-      
-
+      {/* 2. THE DETAILED ANALYSIS: Only shown when expanded */}
       {isExpanded && (
-         <div>
-        <ResumeAnalysis 
-          neuralValidation={parsedData.neural_validation}
-          experienceHistory={parsedData.experience_history}
-          // We pass these as empty/hidden inside ResumeAnalysis 
-          // to avoid the double-ring visual.
-        />
-      </div>
+        <div style={styles.scrollArea} className="custom-scroll">
+          <ResumeAnalysis 
+            neuralValidation={parsedData.quick_verdict} // Using verdict for the report
+            detailedExperience={parsedData.detailed_experience}
+            detailedEducation={parsedData.detailed_education}
+          />
+          
+          <div style={styles.footer}>
+            <span style={styles.clickHint}>ANALYSIS_COMPLETE_::_{new Date().getFullYear()}</span>
+          </div>
+        </div>
       )}
+
+      {/* 3. COLLAPSED VIEW HINT: Shown when not expanded */}
+      {/* {!isExpanded && (
+        <div style={styles.collapsedOverlay}>
+          <span style={styles.clickHint}>CLICK_TO_EXPAND_DOSSIER</span>
+        </div>
+      )} */}
     </div>
   );
 };
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   gridContainer: { 
     height: '100%', 
     display: 'flex', 
-    flexDirection: 'column' as const,
+    flexDirection: 'column', 
     overflow: 'hidden', 
-    position: 'relative' as const,
+    position: 'relative',
     backgroundColor: '#020617',
-    padding: '24px' // Add padding so it's not touching the edges
+    padding: '20px',
+    boxSizing: 'border-box'
   },
   expandedContainer: { 
     width: '100%', 
-    maxWidth: '700px', 
-    margin: '0 auto', 
-    height: '75vh', 
+    height: '100%', // Takes up the full height of the parent grid tile
     display: 'flex', 
-    flexDirection: 'column' as const,
+    flexDirection: 'column', 
     background: '#020617',
-    borderRadius: '12px',
-    border: '1px solid #1e293b',
     overflow: 'hidden',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    padding: '24px'
+    padding: '24px',
+    boxSizing: 'border-box'
   },
   fixedHeader: {
     flexShrink: 0,
-    marginBottom: '20px',
-    borderBottom: '1px solid rgba(255,255,255,0.03)',
-    paddingBottom: '20px'
+    marginBottom: '16px',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    paddingBottom: '16px'
   },
   scrollArea: { 
     flex: 1, 
-    overflowY: 'auto' as const,
+    overflowY: 'auto', 
     backgroundColor: '#020617',
-    paddingRight: '4px' // Space for the scrollbar
+    paddingRight: '8px',
+  },
+  collapsedOverlay: {
+    marginTop: 'auto',
+    textAlign: 'center',
+    padding: '10px',
+    borderTop: '1px solid rgba(255,255,255,0.02)'
   },
   footer: {
-    padding: '10px 0',
-    textAlign: 'right' as const,
-    background: '#020617'
+    padding: '24px 0 10px 0',
+    textAlign: 'center',
+    opacity: 0.5
   },
-  clickHint: { fontSize: '9px', color: '#334155', fontWeight: 800, letterSpacing: '1px' }
+  clickHint: { 
+    fontSize: '9px', 
+    color: '#475569', 
+    fontWeight: 800, 
+    letterSpacing: '2px', 
+    fontFamily: 'var(--font-mono)' 
+  }
 };
 
 export default ResumeGrid;
