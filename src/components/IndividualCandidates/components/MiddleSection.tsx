@@ -44,7 +44,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
         /* 🚀 INDIVIDUAL VIEW: Collapsing Hero Logic */
         <div style={styles.fullViewContainer}>
           
-          {/* BIO_UPLINK: Pinned to top with higher Z-Index */}
+          {/* BIO_UPLINK: Navigation Header */}
           <div style={{
             ...styles.bioWrapper,
             flex: activeView ? '0 0 48px' : '1 1 auto', 
@@ -58,13 +58,13 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
             />
           </div>
 
-          {/* SOURCE_DOSSIER: Claims remaining space with minHeight: 0 to prevent overflow */}
+          {/* SOURCE_DOSSIER: Browser Viewport */}
           <div style={{
             ...styles.sourceWrapper,
             flex: activeView ? 1 : 0,
             opacity: activeView ? 1 : 0,
             pointerEvents: activeView ? 'auto' : 'none',
-            minHeight: 0 // CRITICAL: Allows flex child to shrink properly
+            minHeight: 0 
           }}>
             <div style={styles.matrixHeader}>
               <div style={styles.headerTitleRow}>
@@ -163,7 +163,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     height: '100%',
     width: '100%',
-    gap: '16px', // Gap between Navbar and Dossier
+    gap: '16px',
     minHeight: 0
   },
   bioWrapper: {
@@ -226,7 +226,6 @@ const styles: Record<string, React.CSSProperties> = {
   scrollWrapper: { flex: 1, overflowY: 'auto' },
   zoomHint: { position: 'absolute' as const, bottom: '12px', right: '16px', fontSize: '8px', color: '#334155' },
   
-  // VIEWER UI
   viewerFrame: { flex: 1, borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.15)', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0f172a' },
   browserBar: { background: '#1e293b', padding: '10px 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' },
   addressBox: { background: '#020617', padding: '6px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' },
