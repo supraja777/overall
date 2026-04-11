@@ -7,7 +7,7 @@ interface Message {
   content: string;
 }
 
-const RightSection = ({ jobDescription }: { jobDescription: string }) => {
+const RightSection = ({ jobDescription, candidate }) => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: 'ai', 
@@ -17,6 +17,7 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isJdOpen, setIsJdOpen] = useState(false);
+  const [actionStatus, setActionStatus] = useState("idle");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -25,7 +26,7 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, actionStatus]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -36,9 +37,9 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
     setMessages(historyWithUser);
     setInput('');
     setIsTyping(true);
+    setActionStatus('idle'); // Reset status on new message
 
     try {
-      // Retrieve stored analysis for RAG-style grounding
       const storageRaw = getFullContextForCompression();
       let candidateContext = "";
       
@@ -55,16 +56,25 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
           content: `You are an elite recruitment AI. 
                     ACTIVE_JD: "${jobDescription}"
                     CANDIDATE_DATA: "${candidateContext}"
-                    
-                    MANDATE: Every response must cross-reference the candidate's data against the JD requirements. 
-                    Provide high-density, technical evaluations.
-                    Each response should be only in max 100 words.
-                    `
+                    MANDATE: Every response must cross-reference candidate data against the JD. 
+                    If the user asks to "mail", "invite", or "send a test", confirm you can do it.`
         },
         ...historyWithUser
       ];
 
       const aiResponse = await processConversation(payloadWithContext);
+      
+      // Intent Detection Logic
+      const lowerRes = aiResponse.toLowerCase();
+    
+        if (lowerRes.includes('coding invite') || lowerRes.includes('test sent')) {
+          setActionStatus("Coding invite sent");
+        } else if (lowerRes.includes('email') || lowerRes.includes('mail sent')) {
+          setActionStatus("Email Sent");
+        } else if (lowerRes.includes('sms') || lowerRes.includes('text sent')) {
+          setActionStatus("Text Sent");
+        }
+
       setMessages([...historyWithUser, { role: 'ai', content: aiResponse }]);
     } catch (error) {
       setMessages([...historyWithUser, { role: 'ai', content: "System Error: Intelligence layer offline." }]);
@@ -96,7 +106,7 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
         </button>
         
         {isJdOpen && (
-          <div style={styles.jdContent}>
+          <div style={styles.jdContent} className="jd-scroll-area">
             {jobDescription || "Awaiting JD sync..."}
           </div>
         )}
@@ -122,6 +132,23 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
             </div>
           </div>
         ))}
+
+        {/* TASK COMPLETION UI */}
+        {actionStatus !== 'idle' && (
+        <div style={styles.eventLogWrapper}>
+          <div style={styles.eventLine} />
+          
+          <div style={styles.eventContent}>
+            
+            <div style={styles.eventBody}>
+              <span style={styles.eventSubject}>{actionStatus.toUpperCase()}</span>
+              <span style={styles.eventConnector}> transmitted to </span>
+              <span style={styles.eventTarget}>{candidate.name.toUpperCase()}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
         {isTyping && (
           <div style={styles.typingIndicator}>
             <span style={styles.typingDot} />
@@ -160,33 +187,68 @@ const RightSection = ({ jobDescription }: { jobDescription: string }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  // --- MAIN LAYOUT ---
   container: { 
-    width: '100%', // Fills the 460px container
+    width: '100%', 
     display: 'flex', 
     flexDirection: 'column', 
     background: '#09090b', 
-    borderLeft: '1px solid #1e293b',
-    height: '100vh',
-    fontFamily: '"Roboto", sans-serif'
+    borderLeft: '1px solid #1e293b', 
+    height: '100vh', 
+    fontFamily: '"Inter", "Roboto", sans-serif',
+    position: 'relative' 
   },
+
+  // --- HEADER SECTION ---
   header: { 
     padding: '24px', 
     borderBottom: '1px solid #1e293b', 
     display: 'flex', 
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    background: '#09090b'
   },
-  statusGroup: { display: 'flex', alignItems: 'center', gap: '8px' },
-  statusDot: { width: '6px', height: '6px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' },
-  headerTitle: { fontSize: '10px', fontWeight: 900, color: '#f8fafc', letterSpacing: '2px', fontFamily: 'monospace' },
-  modelBadge: { fontSize: '9px', color: '#475569', border: '1px solid #1e293b', padding: '2px 6px', borderRadius: '4px', fontFamily: 'monospace' },
-  
+  statusGroup: { display: 'flex', alignItems: 'center', gap: '10px' },
+  statusDot: { 
+    width: '6px', 
+    height: '6px', 
+    background: '#10b981', 
+    borderRadius: '50%', 
+    boxShadow: '0 0 10px rgba(16, 185, 129, 0.6)' 
+  },
+  headerTitle: { 
+    fontSize: '11px', 
+    fontWeight: 900, 
+    color: '#f8fafc', 
+    letterSpacing: '2px', 
+    fontFamily: 'monospace' 
+  },
+  modelBadge: { 
+    fontSize: '9px', 
+    color: '#475569', 
+    border: '1px solid #1e293b', 
+    padding: '3px 8px', 
+    borderRadius: '4px', 
+    fontFamily: 'monospace',
+    background: '#020617'
+  },
+
+  // --- JOB DESCRIPTION DROPDOWN ---
   jdWrapper: { background: '#0c0c0e', borderBottom: '1px solid #1e293b' },
-  jdToggle: {
-    width: '100%', padding: '14px 24px', background: 'none', border: 'none',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    color: '#64748b', fontSize: '10px', fontWeight: 800, cursor: 'pointer',
-    fontFamily: 'monospace', letterSpacing: '1px'
+  jdToggle: { 
+    width: '100%', 
+    padding: '14px 24px', 
+    background: 'none', 
+    border: 'none', 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    color: '#64748b', 
+    fontSize: '10px', 
+    fontWeight: 800, 
+    cursor: 'pointer', 
+    fontFamily: 'monospace',
+    transition: 'color 0.2s'
   },
   jdToggleLeft: { display: 'flex', alignItems: 'center', gap: '8px' },
   jdDot: { width: '4px', height: '4px', background: '#be185d', borderRadius: '50%' },
@@ -195,37 +257,122 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '13px', 
     color: '#94a3b8', 
     lineHeight: '1.6', 
-    maxHeight: '200px', 
-    overflowY: 'auto',
-    backgroundColor: '#020617', 
-    borderTop: '1px solid #1e293b',
-    // Custom Scrollbar styling for Webkit browsers (Chrome, Safari, Edge)
-    scrollbarWidth: 'thin', // For Firefox
-    scrollbarColor: '#1e293b transparent', // For Firefox
+    maxHeight: '180px', 
+    overflowY: 'auto', 
+    backgroundColor: '#020617',
+    scrollbarWidth: 'thin',
+    scrollbarColor: '#1e293b transparent'
   },
 
+  // --- CHAT CONTENT AREA ---
   chatArea: { 
     flex: 1, 
     padding: '24px', 
     overflowY: 'auto', 
     display: 'flex', 
     flexDirection: 'column', 
-    gap: '28px' 
+    gap: '28px',
+    scrollBehavior: 'smooth'
   },
-  messageWrapper: { display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' },
-  roleLabel: { fontSize: '9px', fontWeight: 800, color: '#475569', letterSpacing: '1px', fontFamily: 'monospace' },
+  messageWrapper: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8px', 
+    width: '100%' 
+  },
+  roleLabel: { 
+    fontSize: '9px', 
+    fontWeight: 800, 
+    color: '#475569', 
+    letterSpacing: '1px', 
+    fontFamily: 'monospace',
+    marginBottom: '2px'
+  },
   bubble: { 
     padding: '16px 20px', 
     borderRadius: '12px', 
     fontSize: '14px', 
     lineHeight: '1.6', 
-    maxWidth: '95%', // Content expanded to fill the new width
-    color: '#e2e8f0',
-    wordBreak: 'break-word'
+    maxWidth: '92%', 
+    color: '#e2e8f0', 
+    wordBreak: 'break-word',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
   },
-  typingIndicator: { fontSize: '11px', color: '#475569', display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '4px' },
-  typingDot: { width: '4px', height: '4px', background: '#475569', borderRadius: '50%' },
-  
+
+  // --- PROFESSIONAL SYSTEM EVENT LOG (Action Status) ---
+  eventLogWrapper: {
+    display: 'flex',
+    gap: '16px',
+    margin: '12px 0',
+    padding: '0 4px',
+    animation: 'fadeInLog 0.4s ease-out',
+  },
+  eventLine: {
+    width: '2px',
+    background: '#be185d',
+    borderRadius: '2px',
+    flexShrink: 0,
+  },
+  eventContent: {
+    flex: 1,
+    background: '#0c0c0e',
+    border: '1px solid #1e293b',
+    borderRadius: '8px',
+    padding: '12px 16px',
+    fontFamily: 'monospace',
+  },
+  eventHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px',
+    borderBottom: '1px solid #1e293b',
+    paddingBottom: '6px',
+  },
+  eventMeta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '9px',
+    fontWeight: 900,
+    color: '#10b981',
+  },
+  eventTime: {
+    fontSize: '9px',
+    color: '#475569',
+  },
+  eventBody: {
+    fontSize: '11px',
+    lineHeight: '1.4',
+    color: '#94a3b8',
+  },
+  eventSubject: {
+    color: '#f8fafc',
+    fontWeight: 800,
+  },
+  eventTarget: {
+    color: '#be185d',
+    fontWeight: 800,
+    textDecoration: 'underline',
+    textDecorationColor: 'rgba(190, 24, 93, 0.3)',
+  },
+
+  // --- TYPING & INPUT ---
+  typingIndicator: { 
+    fontSize: '11px', 
+    color: '#475569', 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '8px',
+    fontFamily: 'monospace'
+  },
+  typingDot: { 
+    width: '4px', 
+    height: '4px', 
+    background: '#be185d', 
+    borderRadius: '50%',
+    animation: 'pulse 1.5s infinite' 
+  },
   inputArea: { padding: '24px', borderTop: '1px solid #1e293b', background: '#09090b' },
   inputWrapper: { position: 'relative', width: '100%' },
   textarea: { 
@@ -234,21 +381,41 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #1e293b', 
     borderRadius: '12px', 
     padding: '16px 50px 16px 16px', 
-    color: 'white', 
+    color: '#fff', 
     fontSize: '14px', 
     outline: 'none', 
     resize: 'none', 
-    height: '100px',
+    height: '100px', 
     boxSizing: 'border-box',
-    fontFamily: '"Roboto", sans-serif'
+    fontFamily: 'inherit',
+    transition: 'border-color 0.2s',
+    focus: { borderColor: '#be185d' }
   },
   sendBtn: { 
-    position: 'absolute', right: '12px', bottom: '12px',
-    width: '32px', height: '32px', background: '#fff', color: '#000',
-    border: 'none', borderRadius: '8px', fontWeight: 900, cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center'
+    position: 'absolute', 
+    right: '12px', 
+    bottom: '12px', 
+    width: '32px', 
+    height: '32px', 
+    background: '#fff', 
+    color: '#000', 
+    border: 'none', 
+    borderRadius: '8px', 
+    fontWeight: 900, 
+    cursor: 'pointer', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    transition: 'transform 0.1s active'
   },
-  inputHint: { fontSize: '8px', color: '#334155', marginTop: '12px', textAlign: 'center', fontFamily: 'monospace', letterSpacing: '1px' }
+  inputHint: { 
+    fontSize: '8px', 
+    color: '#334155', 
+    marginTop: '12px', 
+    textAlign: 'center', 
+    fontFamily: 'monospace',
+    letterSpacing: '1px' 
+  }
 };
 
 export default RightSection;

@@ -2,6 +2,7 @@ import { conversation_agent } from '../../../agents/conversation_agent';
 import { getFullContextForCompression } from './storage'; // Import your storage getter
 
 export const processConversation = async (history: { role: 'recruiter' | 'ai' | 'system', content: string }[]) => {
+
   const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
   
   // 1. PULL DATA FROM STORAGE

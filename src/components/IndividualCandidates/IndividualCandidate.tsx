@@ -2,16 +2,22 @@ import { useEffect, useState } from 'react';
 import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
-import { agent } from '../IndividualCandidates/utils/agent';
-import { scrapData } from '../IndividualCandidates/utils/scraper';
-import { overall_agent } from '../../agents/overall_agent';
-import { getFullContextForCompression, updateGlobalStorage } from '../IndividualCandidates/utils/storage';
+import { updateGlobalStorage } from '../IndividualCandidates/utils/storage';
 
 // Dummy Data Imports
 import resumeDummy from './results/resume_agent_result.json';
 import portfolioDummy from './results/portfolio_agent_result.json';
 import leetcodeDummy from './results/leetcode_agent_result.json';
 import executiveDummy from './results/executive_result_agent.json';
+
+// Define the Candidate Interface
+export interface Candidate {
+  id: string;
+  name: string;
+  role?: string;
+  email?: string;
+  // Add any other specific properties you use
+}
 
 export type UploadedItem = { 
   id: string; 
@@ -20,7 +26,14 @@ export type UploadedItem = {
   content?: string; 
 };
 
-function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any) {
+// Define Props for this component
+interface IndividualCandidateProps {
+  jobDescription: string;
+  selectedCandidate: Candidate; // Properly typed
+  onBack: () => void;
+}
+
+function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: IndividualCandidateProps) {
   const [items, setItems] = useState<UploadedItem[]>([]);
   const [aiResults, setAiResults] = useState<{ domain: string; content: string }[]>([]);
   const [overallResult, setOverallResult] = useState<string | null>(null);
@@ -47,7 +60,6 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any)
     setAiResults(dummyPayload);
     setOverallResult(executiveDummy.executive_verdict);
 
-    // Persist to storage for the RightSection AI context
     updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeDummy));
     updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
     updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
@@ -66,17 +78,15 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any)
 
   const runAnalysis = async () => {
     setShowGrid(true);
-    // Logic for non-dummy analysis would trigger here
   };
 
   return (
     <div style={styles.appShell}>
-      {/* Back Navigation */}
+      {/* Back Navigation - Extreme Top Right */}
       <button onClick={onBack} style={styles.backBtn}>
         ← GALLERY
       </button>
       
-      {/* Left Navigation: Fixed width for sources */}
       <LeftSection 
         items={items} 
         onAdd={addItem} 
@@ -89,7 +99,6 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any)
         }}
       />
 
-      {/* Middle Workspace: Flexible Area */}
       <div style={styles.middleContainer}>
         <MiddleSection 
           results={aiResults} 
@@ -101,9 +110,11 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: any)
         />
       </div>
 
-      {/* Right Collaboration Section: Expanded Presence */}
       <div style={styles.rightContainer}>
-        <RightSection jobDescription={jobDescription} />
+        <RightSection 
+          jobDescription={jobDescription} 
+          candidate={selectedCandidate} 
+        />
       </div>
     </div>
   );
@@ -128,24 +139,22 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: '#020617'
   },
   rightContainer: {
-    width: '460px', // Increased space for the Neural Collab chat
+    width: '460px', 
     flexShrink: 0,
     backgroundColor: '#09090b',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 10 // Keeps it below the floating back button
   },
   backBtn: { 
     position: 'absolute', 
-    top: '16px',        // Spacing from top edge
-    right: '16px',      // Spacing from right edge (Extreme Right)
-    zIndex: 1000,       // Ensure it is above the RightSection header
-    
-    // Aesthetic Updates for "Extreme Right" placement
+    top: '18px',        
+    right: '18px',      
+    zIndex: 1100,       // Higher than rightContainer
     padding: '8px 14px', 
-    background: 'rgba(190, 24, 93, 0.9)', // Slight transparency
-    backdropFilter: 'blur(4px)',          // Neural glass effect
+    background: '#be185d', // Solid pink for visibility on dark header
     color: '#fff', 
-    border: '1px solid rgba(255, 255, 255, 0.1)', 
+    border: '1px solid rgba(255, 255, 255, 0.2)', 
     borderRadius: '4px', 
     cursor: 'pointer', 
     fontSize: '10px', 
@@ -153,9 +162,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'monospace',
     letterSpacing: '1px',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-    transition: 'all 0.2s ease'
   }
-  
 };
 
 export default IndividualCandidate;
