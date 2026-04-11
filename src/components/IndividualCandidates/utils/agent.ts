@@ -37,8 +37,8 @@ export const agent = async (scrappedDataMap: Record<string, string>): Promise<st
       aiResponse = await callGroqModel(prompt);
     } 
     else if (domain.includes('github.io') || domain.includes('portfolio')) {
-      const prompt = portfolio_agent(content);
-      aiResponse = await callGroqModel(prompt);
+      // const prompt = portfolio_agent(content);
+      aiResponse = await portfolio_agent.process(content);
     } 
     else {
       // Fallback for unknown domains

@@ -51,6 +51,7 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
           }
         }
         if (dataToAnalyze) {
+          console.log("All labels ", label)
           const report = await agent({ [label]: dataToAnalyze });
           setAiResults((prev) => [...prev, { domain: label, content: report }]);
         }
