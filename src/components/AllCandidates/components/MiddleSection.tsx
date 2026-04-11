@@ -15,8 +15,22 @@ const MiddleSection = ({ onSave }: MiddleSectionProps) => {
   const [portfolio, setPortfolio] = useState('');
   const [leetcode, setLeetcode] = useState('');
   const [resumeText, setResumeText] = useState('');
+  const [photo, setPhoto] = useState<string | null>(null); // New state for photo
   const [isExtracting, setIsExtracting] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null); // New ref for photo
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPhoto(event.target?.result as string); // Stores base64 string
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,8 +70,8 @@ const MiddleSection = ({ onSave }: MiddleSectionProps) => {
       name,
       portfolio,
       leetcode,
-      resumeText: resumeText, // This passes the extracted string to App.tsx
-      photo: null
+      resumeText: resumeText,
+      photo: photo // Now passing the actual photo string
     };
 
     onSave(newCandidate);
@@ -67,7 +81,9 @@ const MiddleSection = ({ onSave }: MiddleSectionProps) => {
     setPortfolio('');
     setLeetcode('');
     setResumeText('');
+    setPhoto(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (photoInputRef.current) photoInputRef.current.value = "";
   };
 
   return (
@@ -75,6 +91,27 @@ const MiddleSection = ({ onSave }: MiddleSectionProps) => {
       <h2 style={styles.title}>Add New Candidate</h2>
       
       <div style={styles.form}>
+        {/* Photo Upload Field */}
+        <div style={styles.field}>
+          <label style={styles.label}>Candidate Photo</label>
+          <div 
+            style={{
+              ...styles.photoBox,
+              backgroundImage: photo ? `url(${photo})` : 'none'
+            }}
+            onClick={() => photoInputRef.current?.click()}
+          >
+            {!photo && <span style={{ fontSize: '20px', color: '#cbd5e1' }}>+</span>}
+          </div>
+          <input 
+            type="file" 
+            ref={photoInputRef} 
+            hidden 
+            accept="image/*" 
+            onChange={handlePhotoUpload} 
+          />
+        </div>
+
         <div style={styles.field}>
           <label style={styles.label}>Full Name</label>
           <input style={styles.input} value={name} onChange={e => setName(e.target.value)} placeholder="Enter name..." />
@@ -115,6 +152,19 @@ const styles: Record<string, React.CSSProperties> = {
   field: { display: 'flex', flexDirection: 'column', gap: '8px' },
   label: { fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' },
   input: { padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '14px' },
+  photoBox: { 
+    width: '80px', 
+    height: '80px', 
+    borderRadius: '12px', 
+    border: '2px dashed #e2e8f0', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    cursor: 'pointer',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundColor: '#f8fafc'
+  },
   uploadBtn: { padding: '14px', borderRadius: '8px', border: '2px dashed #cbd5e1', background: '#f8fafc', color: '#64748b', cursor: 'pointer', fontWeight: 700, fontSize: '11px' },
   uploadedBtn: { padding: '14px', borderRadius: '8px', border: '2px solid #10b981', background: '#ecfdf5', color: '#059669', cursor: 'pointer', fontWeight: 700, fontSize: '11px' },
   saveBtn: { marginTop: '10px', padding: '16px', borderRadius: '8px', border: 'none', background: '#0f172a', color: '#fff', fontWeight: 800, cursor: 'pointer', letterSpacing: '1px' }
