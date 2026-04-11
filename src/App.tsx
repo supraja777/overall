@@ -102,8 +102,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     height: '100vh',
     width: '100vw',
-    backgroundColor: '#0a0a0c',
-    color: '#e2e8f0',
+    backgroundColor: '#fce7f3 !important', // Soft Pink
+    color: '#f2edef', // Deep Pink text for readability
     overflow: 'hidden',
   }
 };

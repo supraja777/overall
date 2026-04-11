@@ -52,7 +52,7 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    background: '#0a0a0c',
+    background: '#0c0a0c',
     overflow: 'hidden',
     borderRight: '1px solid #1e293b'
   },
