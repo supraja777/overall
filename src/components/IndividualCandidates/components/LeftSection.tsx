@@ -1,67 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
-
-import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 interface LeftSectionProps {
   items: any[];
   onAdd: (name: string, type: 'file' | 'url', content?: string) => void;
+  onViewSource: (type: 'url' | 'file', content: string) => void; 
   onRun: () => void;
   isAnalyzing: boolean;
   selectedCandidate?: any;
 }
 
-const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: LeftSectionProps) => {
+const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedCandidate }: LeftSectionProps) => {
   const [url, setUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // AUTO-POPULATE: Grabs all data from the candidate object on mount
   useEffect(() => {
     if (selectedCandidate) {
-      // 1. Portfolio
       if (selectedCandidate.portfolio) onAdd(selectedCandidate.portfolio, 'url');
-      
-      // 2. LeetCode
       if (selectedCandidate.leetcode) onAdd(selectedCandidate.leetcode, 'url');
-      
-      // 3. Resume (Text extracted from the form)
       if (selectedCandidate.resumeText) {
         onAdd(`${selectedCandidate.name}_Resume.pdf`, 'file', selectedCandidate.resumeText);
       }
     }
-  }, [selectedCandidate?.id]); 
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.type === "application/pdf") {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const typedarray = new Uint8Array(event.target?.result as ArrayBuffer);
-          const loadingTask = pdfjsLib.getDocument({ data: typedarray });
-          const pdf = await loadingTask.promise;
-          let fullText = "";
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const textContent = await page.getTextContent();
-            fullText += textContent.items.map((item: any) => item.str).join(" ") + "\n";
-          }
-          onAdd(file.name, 'file', fullText);
-        } catch (err: any) {
-          alert("Error reading PDF");
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      const reader = new FileReader();
-      reader.onload = (event) => onAdd(file.name, 'file', event.target?.result as string);
-      reader.readAsText(file);
-    }
-    e.target.value = "";
-  };
+  }, [selectedCandidate?.id]);
 
   return (
     <div style={styles.sidebar}>
@@ -77,7 +37,11 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: Le
         <span style={styles.label}>QUEUE ({items.length})</span>
         <div style={styles.list}>
           {items.map((it) => (
-            <div key={it.id} style={styles.itemCard}>
+            <div 
+              key={it.id} 
+              style={styles.itemCard}
+              onClick={() => onViewSource(it.type, it.type === 'url' ? it.name : it.content || "")}
+            >
               <span style={{ fontSize: '18px' }}>{it.type === 'file' ? '📄' : '🔗'}</span> 
               <div style={styles.itemTextContainer}>
                 <div style={styles.itemName}>{it.name}</div>
@@ -85,28 +49,17 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: Le
               </div>
             </div>
           ))}
-          {items.length === 0 && <div style={styles.emptyHint}>Awaiting sources...</div>}
         </div>
       </div>
 
       <div style={styles.footer}>
-        <input 
-          style={styles.input} 
-          placeholder="Enter Profile URL..." 
-          value={url} 
-          onChange={(e) => setUrl(e.target.value)} 
-          onKeyDown={(e) => { if (e.key === 'Enter' && url) { onAdd(url, 'url'); setUrl(''); } }}
-        />
+        <input style={styles.input} placeholder="Enter URL..." value={url} onChange={(e) => setUrl(e.target.value)} />
         <div style={styles.buttonGroup}>
           <button onClick={() => { if(url) { onAdd(url, 'url'); setUrl(''); } }} style={styles.addBtn}>Add URL</button>
-          <button onClick={() => fileInputRef.current?.click()} style={styles.uploadBtn}>New PDF</button>
-          <input type="file" ref={fileInputRef} hidden onChange={handleFileUpload} accept=".pdf,.txt" />
+          <button onClick={() => fileInputRef.current?.click()} style={styles.uploadBtn}>Add PDF</button>
+          <input type="file" ref={fileInputRef} hidden accept=".pdf" />
         </div>
-        <button 
-          onClick={onRun} 
-          disabled={isAnalyzing || items.length === 0} 
-          style={{ ...styles.runBtn, opacity: (isAnalyzing || items.length === 0) ? 0.5 : 1 }}
-        >
+        <button onClick={onRun} disabled={isAnalyzing || items.length === 0} style={styles.runBtn}>
           {isAnalyzing ? 'SYNTHESIZING...' : 'ANALYZE CANDIDATE'}
         </button>
       </div>
@@ -123,17 +76,16 @@ const styles: Record<string, React.CSSProperties> = {
   content: { flex: 1, padding: '0 24px', overflowY: 'auto' },
   label: { fontSize: '10px', fontWeight: 800, color: '#475569', marginBottom: '16px', display: 'block' },
   list: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  itemCard: { padding: '12px', background: '#111827', borderRadius: '10px', border: '1px solid #1e293b', display: 'flex', gap: '12px', alignItems: 'center' },
+  itemCard: { padding: '12px', background: '#111827', borderRadius: '10px', border: '1px solid #1e293b', display: 'flex', gap: '12px', alignItems: 'center', cursor: 'pointer' },
   itemTextContainer: { display: 'flex', flexDirection: 'column', overflow: 'hidden' },
-  itemName: { fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  itemType: { fontSize: '9px', color: '#6366f1', fontWeight: 800 },
+  itemName: { fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#f1f5f9' },
+  itemType: { fontSize: '8px', color: '#6366f1', fontWeight: 800 },
   footer: { padding: '24px', borderTop: '1px solid #1e293b' },
-  input: { width: '100%', padding: '12px', borderRadius: '8px', background: '#020617', border: '1px solid #1e293b', color: 'white', marginBottom: '12px', boxSizing: 'border-box' },
-  buttonGroup: { display: 'flex', gap: '8px', marginBottom: '12px' },
-  addBtn: { flex: 1, padding: '10px', borderRadius: '8px', background: 'transparent', border: '1px solid #334155', color: 'white', fontSize: '11px', cursor: 'pointer' },
-  uploadBtn: { flex: 1, padding: '10px', borderRadius: '8px', background: '#312e81', border: 'none', color: '#a5b4fc', fontSize: '11px', cursor: 'pointer', fontWeight: 800 },
-  runBtn: { width: '100%', padding: '14px', borderRadius: '8px', background: '#fff', color: '#000', fontWeight: 900, border: 'none', cursor: 'pointer' },
-  emptyHint: { fontSize: '12px', color: '#1e293b', textAlign: 'center', marginTop: '20px' }
+  input: { width: '100%', padding: '10px', borderRadius: '8px', background: '#020617', border: '1px solid #1e293b', color: 'white', marginBottom: '10px' },
+  buttonGroup: { display: 'flex', gap: '8px', marginBottom: '10px' },
+  addBtn: { flex: 1, padding: '8px', borderRadius: '6px', background: 'transparent', border: '1px solid #334155', color: '#fff', fontSize: '10px', cursor: 'pointer' },
+  uploadBtn: { flex: 1, padding: '8px', borderRadius: '6px', background: '#312e81', border: 'none', color: '#fff', fontSize: '10px', cursor: 'pointer' },
+  runBtn: { width: '100%', padding: '12px', borderRadius: '8px', background: '#fff', color: '#000', fontWeight: 900, cursor: 'pointer' }
 };
 
 export default LeftSection;

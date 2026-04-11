@@ -74,7 +74,7 @@ export async function callGroqModel(prompt: string): Promise<string> {
   if (!GROQ_API_KEY) {
     return "Error: VITE_GROQ_API_KEY is not defined in your .env file.";
   }
-  await sleep(15000); // 15 seconds = 15,000 milliseconds
+  // await sleep(15000); // 15 seconds = 15,000 milliseconds
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",

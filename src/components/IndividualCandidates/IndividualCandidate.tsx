@@ -19,12 +19,16 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
   const [aiResults, setAiResults] = useState<{ domain: string; content: string }[]>([]);
   const [overallResult, setOverallResult] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // NEW: State to track what the middle section is showing
+  const [activeView, setActiveView] = useState<{ type: 'url' | 'file' | 'analysis'; content: string | null }>({
+    type: 'analysis', // Default view
+    content: null
+  });
 
   const addItem = (name: string, type: 'file' | 'url', content?: string) => {
     setItems((prev) => {
-      // 🛑 DUPLICATION CHECK: Prevent adding the same name/URL twice
       if (prev.some(item => item.name === name)) return prev;
-
       const newItem: UploadedItem = { 
         id: Math.random().toString(36).substring(7), 
         name, 
@@ -37,6 +41,10 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
 
   const runAnalysis = async () => {
     if (items.length === 0) return;
+    
+    // Switch view to ANALYSIS mode immediately when starting
+    setActiveView({ type: 'analysis', content: null });
+    
     setIsAnalyzing(true);
     setAiResults([]);
     setOverallResult(null); 
@@ -78,29 +86,39 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
     setIsAnalyzing(false);
   };
 
+  // Handler for when a source is clicked in LeftSection
+  const handleViewSource = (type: 'file' | 'url', content: string) => {
+    setActiveView({ type, content });
+  };
+
   return (
     <div style={styles.appShell}>
       <button onClick={onBack} style={styles.backBtn}>← GALLERY</button>
+      
       <LeftSection 
         items={items} 
         onAdd={addItem} 
         onRun={runAnalysis} 
         isAnalyzing={isAnalyzing} 
         selectedCandidate={selectedCandidate}
+        onViewSource={handleViewSource} // Pass this to LeftSection
       />
+
       <MiddleSection 
         results={aiResults} 
         overallResult={overallResult}
         isLoading={isAnalyzing} 
         selectedCandidate={selectedCandidate}
+        activeView={activeView} // Pass the view state
       />
+
       <RightSection />
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  appShell: { display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#fce7f3', overflow: 'hidden', position: 'relative' },
+  appShell: { display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#09090b', overflow: 'hidden', position: 'relative' },
   backBtn: { position: 'absolute', top: '20px', right: '20px', zIndex: 100, padding: '8px 16px', background: '#be185d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }
 };
 
