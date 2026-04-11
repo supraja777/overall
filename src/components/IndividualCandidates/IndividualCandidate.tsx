@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
@@ -21,6 +21,74 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showGrid, setShowGrid] = useState(false); // Controls the view swap
   const [activeView, setActiveView] = useState<{ type: 'url' | 'file'; content: string } | null>(null);
+
+  const [resumeResult, setResumeResult] = useState<any>(null);
+  const [portfolioResult, setPortfolioResult] = useState<any>(null);
+  const [leetcodeResult, setLeetcodeResult] = useState<any>(null);
+
+  const hasInitiated = useRef(false);
+
+  useEffect(() => {
+    if (selectedCandidate && !hasInitiated.current) {
+      hasInitiated.current = true;
+      triggerSequentialAnalysis();
+    }
+  }, [selectedCandidate]);
+
+  const triggerSequentialAnalysis = async () => {
+    console.log("Started analysing")
+    setIsAnalyzing(true);
+    console.log("📡 INITIALIZING_SEQUENTIAL_UPLINK...");
+
+    try {
+      // 1. RESUME_AGENT
+      const resumeItem = items.find(i => i.name.toLowerCase().includes('resume'));
+      if (resumeItem?.content) {
+        console.log("Step 1: Analyzing Resume...");
+        const res = await agent({ resume: resumeItem.content });
+        setResumeResult(res);
+      }
+
+      // 2. PORTFOLIO_AGENT
+      const portfolioItem = items.find(i => i.type === 'url' && !i.name.includes('leetcode'));
+      if (portfolioItem) {
+        console.log("Step 2: Analyzing Portfolio...");
+        const scrap = await scrapData(portfolioItem.name);
+        if (scrap.success) {
+          const res = await agent({ portfolio: portfolioItem.content ?? "" });
+          setPortfolioResult(res);
+        }
+      }
+
+      // 3. LEETCODE_AGENT
+      const leetcodeItem = items.find(i => i.name.includes('leetcode'));
+      if (leetcodeItem) {
+        console.log("Step 3: Analyzing LeetCode...");
+        const scrap = await scrapData(leetcodeItem.name);
+        if (scrap.success) {
+          // Assuming you have a specific leetcode_agent or common agent util
+          const res = await agent({ leetcode: scrap.data ?? "" });
+          setLeetcodeResult(res);
+        }
+      }
+
+      // 4. OVERALL_AGENT
+      console.log("Step 4: Synthesizing Overall Verdict...");
+      const fullStoreRaw = getFullContextForCompression();
+      if (fullStoreRaw) {
+        const fullStore = JSON.parse(fullStoreRaw);
+        const summary = await overall_agent(fullStore.analyses);
+        setOverallResult(summary);
+      }
+
+      console.log("✅ ALL_SYSTEMS_SYNCHRONIZED");
+    } catch (e) {
+      console.error("UPLINK_INTERRUPTED", e);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+  
 
   const addItem = (name: string, type: 'file' | 'url', content?: string) => {
     setItems((prev) => {
@@ -72,6 +140,7 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
   };
 
   return (
+    
     <div style={styles.appShell}>
       <button onClick={onBack} style={styles.backBtn}>← GALLERY</button>
       
@@ -88,7 +157,13 @@ function IndividualCandidate({ selectedCandidate, onBack }: any) {
       />
       <div style={{flex: 1}}>
       <MiddleSection 
-        results={aiResults} 
+        results ={
+          [
+            { domain: 'resume', content: resumeResult },
+            { domain: 'portfolio', content: portfolioResult },
+            { domain: 'leetcode', content: leetcodeResult }
+          ]
+        }
         overallResult={overallResult}
         isLoading={isAnalyzing} 
         selectedCandidate={selectedCandidate}

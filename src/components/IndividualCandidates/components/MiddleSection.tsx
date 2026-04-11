@@ -7,7 +7,6 @@ import ExecutiveTop from '../grids/executive_top';
 import PortfolioAnalysis from '../grids/portfolio_analysis';
 import LeetCodeAnalysis from '../grids/leetcode_analysis';
 import ExecutiveVerdict from '../grids/executive_verdict';
-import PortfolioMaster from '../grids/portfolio/portfolio_masters';
 
 const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, showGrid, isLoading }: any) => {
   const [expandedTile, setExpandedTile] = useState<number | null>(null);
@@ -102,13 +101,11 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
               ), "PDF_CORE")}
 
               {renderTile(1, "PROJECT DEPTH", (
-              <PortfolioMaster 
-                data={results?.find((r: any) => 
-                  r.domain === 'portfolio' || r.domain?.includes('github.io')
-                )} 
-                isExpanded={expandedTile === 1} 
-              />
-            ), "WEB_PORTFOLIO")}
+                <>
+                  <PortfolioTop />
+                  <PortfolioAnalysis data={results?.find((r: any) => r.domain === 'portfolio')} />
+                </>
+              ), "WEB_PORTFOLIO")}
 
               {renderTile(2, "PROBLEM SOLVING", (
                 <>
