@@ -55,7 +55,7 @@ const ResumeTop = ({ isLoading, matchScore = 0, topSkills = [] }: ResumeTopProps
         <div style={styles.statusBox}>
           <div style={styles.labelRow}>
             <div style={styles.glowDot} />
-            <span style={styles.label}>NEURAL_MATCH_ENGINE</span>
+           
           </div>
           <h3 style={styles.matchTitle}>
             Strength: <span style={styles.highlight}>{safeScore}%</span>
@@ -66,7 +66,7 @@ const ResumeTop = ({ isLoading, matchScore = 0, topSkills = [] }: ResumeTopProps
 
       {/* SKILLS SECTION */}
       <div style={styles.skillsSection}>
-        <span style={styles.label}>CORE_COMPETENCIES</span>
+        <span style={styles.label}>Top Skills</span>
         <div style={styles.chipGrid}>
           {topSkills?.slice(0, 10).map((skill, i) => (
             <span key={i} style={styles.skillChip}>{skill}</span>

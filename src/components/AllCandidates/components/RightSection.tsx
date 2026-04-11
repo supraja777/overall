@@ -25,11 +25,11 @@ const RightSection = ({jobDescription, setJobDescription}) => {
       {/* Job Description Input Card */}
       <div style={styles.card}>
         <div style={styles.headerRow}>
-          <p style={styles.cardLabel}>JOB_DESCRIPTION_INPUT</p>
+          <p style={styles.cardLabel}>Enter Job Description</p>
           <span style={styles.tag}>AI_READY</span>
         </div>
         <p style={styles.cardHint}>
-          Paste requirements to initialize neural matching.
+          Paste requirements 
         </p>
 
         <textarea
@@ -51,7 +51,7 @@ const RightSection = ({jobDescription, setJobDescription}) => {
             onClick={handleSubmit}
             disabled={!jobDescription.trim()}
           >
-            INITIALIZE
+            Save Job Descriptions
           </button>
         </div>
       </div>
@@ -98,18 +98,18 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   cardLabel: {
-    fontSize: '10px',
+   fontSize: '18px',
     fontWeight: 800,
-    color: '#f8fafc',
-    fontFamily: 'var(--font-mono)',
-    letterSpacing: '1px',
+    color: '#f1f5f9',
     margin: 0,
+    fontFamily: 'var(--font-roboto)',
+    letterSpacing: '1px',
   },
   tag: {
     fontSize: '9px',
     fontWeight: 900,
     color: '#be185d',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   cardHint: {
     fontSize: '12px',
@@ -127,7 +127,7 @@ const styles: Record<string, React.CSSProperties> = {
     resize: 'none',
     outline: 'none',
     lineHeight: 1.6,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     boxSizing: 'border-box' as const,
   },
   textareaFooter: {
@@ -148,7 +148,7 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     borderRadius: '4px',
     padding: '8px 16px',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     transition: 'all 0.2s',
   },
   resultCard: {
@@ -178,7 +178,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#be185d',
     flex: 1,
     margin: 0,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   clearBtn: {
     fontSize: '9px',
@@ -187,7 +187,7 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   divider: {
     height: '1px',
@@ -199,7 +199,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.6,
     margin: 0,
     whiteSpace: 'pre-wrap' as const,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
 };
 

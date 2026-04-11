@@ -12,7 +12,7 @@ const LeftSection = ({ candidates, onSelect }: LeftSectionProps) => {
       {/* BRANDING HEADER */}
       <div style={styles.brand}>
         <div style={styles.logo}>✦</div>
-        <h2 style={styles.brandName}>NEURAL_ANALYST</h2>
+        <h2 style={styles.brandName}>Candidates</h2>
       </div>
 
       <div style={styles.content}>
@@ -38,9 +38,7 @@ const LeftSection = ({ candidates, onSelect }: LeftSectionProps) => {
             </div>
           ))}
 
-          {candidates.length === 0 && (
-            <div style={styles.emptyHint}>NO_DATA_AVAILABLE</div>
-          )}
+          
         </div>
       </div>
     </div>
@@ -82,7 +80,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#f1f5f9', 
     letterSpacing: '1.5px', 
     margin: 0,
-    fontFamily: 'var(--font-mono)'
+    fontFamily: 'var(--font-roboto)'
   },
   content: { 
     flex: 1, 
@@ -96,7 +94,7 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '1.2px', 
     marginBottom: '16px', 
     display: 'block',
-    fontFamily: 'var(--font-mono)'
+    fontFamily: 'var(--font-roboto)'
   },
   list: { 
     display: 'flex', 
@@ -129,7 +127,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#be185d',
     fontSize: '12px',
     fontWeight: 800,
-    fontFamily: 'var(--font-mono)'
+    fontFamily: 'var(--font-roboto)'
   },
   itemInfo: { 
     overflow: 'hidden' 
@@ -138,7 +136,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '11px', 
   //  fontWeight: 800, 
     color: '#f1f5f9', 
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     letterSpacing: '0.5px',
     fontWeight: 500, // Roboto looks best at 500 for semi-bold
   },

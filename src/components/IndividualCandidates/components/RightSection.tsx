@@ -88,7 +88,7 @@ const RightSection = ({ jobDescription, candidate }) => {
       <div style={styles.header}>
         <div style={styles.statusGroup}>
           <div style={styles.statusDot} />
-          <span style={styles.headerTitle}>NEURAL COLLAB</span>
+          <span style={styles.headerTitle}>SMART SELECT</span>
         </div>
         <span style={styles.modelBadge}>LLAMA 3.3</span>
       </div>
@@ -100,7 +100,7 @@ const RightSection = ({ jobDescription, candidate }) => {
         >
           <div style={styles.jdToggleLeft}>
             <div style={styles.jdDot} />
-            <span>JOB_DESCRIPTION_CONTEXT</span>
+            <span>Job Description</span>
           </div>
           <span style={{ transform: isJdOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>▼</span>
         </button>

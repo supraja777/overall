@@ -16,9 +16,7 @@ const PortfolioAnalysis = ({ verdict = "", projects = [] }: any) => {
       <div style={styles.scrollWrapper} className="custom-scroll">
         {/* 1. PORTFOLIO VERDICT */}
         <div style={styles.section}>
-          <div style={styles.highlightHeader}>
-            <span style={styles.label}>PORTFOLIO_VERDICT</span>
-          </div>
+       
           <p style={styles.validationText}>{verdict}</p>
         </div>
 

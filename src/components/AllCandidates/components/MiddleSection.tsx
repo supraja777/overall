@@ -68,40 +68,47 @@ const MiddleSection = ({ onSave }: any) => {
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <h2 style={styles.heading}>REGISTER_CANDIDATE</h2>
-        <p style={styles.subheading}>Initialize a new profile within the neural database.</p>
+        <h2 style={styles.heading}>Register Applicant</h2>
+       
       </div>
 
       {/* Profile Picture */}
       <div style={styles.card}>
-        <p style={styles.cardLabel}>BIOMETRIC_VISUAL</p>
+        <p style={styles.cardLabel}>Upload Photo</p>
         <div style={styles.photoRow}>
           <div
             style={{
               ...styles.avatar,
-              backgroundImage: photo ? `url(${photo})` : 'none',
-              border: photo ? '2px solid #be185d' : '1px dashed rgba(255,255,255,0.1)',
+              backgroundImage:  `url(${null})`,
+              border: '2px solid #be185d' ,
+              width: '100%'
             }}
             onClick={() => photoInputRef.current?.click()}
-          >
+          > 
+            {photo != null && <span>Uploaded photo!</span>}
             {!photo && <span style={styles.avatarPlus}>+</span>}
           </div>
-          <div>
-            <p style={styles.photoHint}>Uplink profile image<br />JPG/PNG — MAX 5MB</p>
-            <button style={styles.chooseBtn} onClick={() => photoInputRef.current?.click()}>
-              SELECT_FILE
-            </button>
-          </div>
+          < >
+           <input 
+              type="file" 
+              ref={photoInputRef} 
+              hidden 
+              accept="image/*" 
+              onChange={handlePhotoUpload} 
+              style={{ width: '100px' }} 
+            />
+          {/* <input type="file" ref={photoInputRef} hidden accept="image/*" onChange={handlePhotoUpload} /> */}
+          </>
         </div>
-        <input type="file" ref={photoInputRef} hidden accept="image/*" onChange={handlePhotoUpload} />
+       
       </div>
 
       {/* Personal Info */}
       <div style={styles.card}>
-        <p style={styles.cardLabel}>IDENTIFICATION_DATA</p>
+        <p style={styles.cardLabel}>Candidate's Data</p>
         
         <div style={styles.field}>
-          <label style={styles.label}>FULL_NAME</label>
+          <label style={styles.label}>Name</label>
           <input
             style={{ ...styles.input, borderColor: nameError ? '#be185d' : 'rgba(255,255,255,0.1)' }}
             value={name}
@@ -112,7 +119,7 @@ const MiddleSection = ({ onSave }: any) => {
         </div>
 
         <div style={styles.field}>
-          <label style={styles.label}>PORTFOLIO_LINK</label>
+          <label style={styles.label}>Add links</label>
           <input
             style={styles.input}
             value={portfolio}
@@ -122,12 +129,12 @@ const MiddleSection = ({ onSave }: any) => {
         </div>
 
         <div style={{ ...styles.field, marginBottom: 0 }}>
-          <label style={styles.label}>LEETCODE_HANDLE</label>
+          <label style={styles.label}>Add links</label>
           <input
             style={styles.input}
             value={leetcode}
             onChange={e => setLeetcode(e.target.value)}
-            placeholder="u/handle"
+            placeholder="https://..."
           />
         </div>
       </div>
@@ -135,7 +142,7 @@ const MiddleSection = ({ onSave }: any) => {
       {/* Resume Upload */}
       <div style={styles.card}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-          <p style={{ ...styles.cardLabel, marginBottom: 0 }}>KNOWLEDGE_GRAPH_PDF</p>
+          <p style={{ ...styles.cardLabel, marginBottom: 0 }}>Add pdf</p>
           {resumeUrl && <span style={styles.badge}>SYNCED</span>}
         </div>
 
@@ -153,12 +160,10 @@ const MiddleSection = ({ onSave }: any) => {
              </svg>
           </div>
           <div>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: resumeUrl ? '#fff' : '#f1f5f9', margin: 0, fontFamily: 'var(--font-mono)' }}>
-              {isExtracting ? 'EXTRACTING_TEXT...' : resumeFileName || 'UPLOAD_RESUME'}
+            <p style={{ fontSize: '12px', fontWeight: 700, color: resumeUrl ? '#fff' : '#f1f5f9', margin: 0, fontFamily: 'var(--font-roboto)' }}>
+              {isExtracting ? 'EXTRACTING_TEXT...' : resumeFileName || 'Upload Your Resume'}
             </p>
-            <span style={{ fontSize: '10px', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
-              {resumeUrl ? 'CLICK TO OVERWRITE' : 'PDF_SYNC_AVAILABLE'}
-            </span>
+            
           </div>
         </div>
         <input type="file" ref={fileInputRef} hidden accept=".pdf" onChange={handleResumeUpload} />
@@ -166,7 +171,7 @@ const MiddleSection = ({ onSave }: any) => {
 
       {/* Submit */}
       <button style={styles.submitBtn} onClick={handleSubmit}>
-        INITIALIZE_PROFILE
+        Create Profile
       </button>
     </div>
   );
@@ -188,7 +193,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 800,
     color: '#f1f5f9',
     margin: 0,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     letterSpacing: '1px',
   },
   subheading: {
@@ -208,12 +213,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cardLabel: {
     fontSize: '10px',
-    fontWeight: 800,
     color: '#475569',
     textTransform: 'uppercase',
     letterSpacing: '1.2px',
     marginBottom: '18px',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   photoRow: {
     display: 'flex',
@@ -242,7 +246,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#64748b',
     lineHeight: 1.5,
     margin: 0,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   chooseBtn: {
     marginTop: '10px',
@@ -254,7 +258,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     padding: '6px 12px',
     cursor: 'pointer',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   field: {
     display: 'flex',
@@ -266,7 +270,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '9px',
     fontWeight: 800,
     color: '#64748b',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     letterSpacing: '1px',
   },
   input: {
@@ -277,7 +281,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#f1f5f9',
     background: '#0f172a',
     outline: 'none',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   errorText: {
     fontSize: '10px',
@@ -309,7 +313,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     background: '#be185d',
     color: '#fff',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
   },
   submitBtn: {
     width: '100%',
@@ -321,7 +325,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     fontWeight: 800,
     cursor: 'pointer',
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-roboto)',
     letterSpacing: '1px',
     boxShadow: '0 4px 20px rgba(190, 24, 93, 0.2)',
   },

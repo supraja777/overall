@@ -68,7 +68,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
           }}>
             <div style={styles.matrixHeader}>
               <div style={styles.headerTitleRow}>
-                <h2 style={styles.title}>SOURCE_DOSSIER</h2>
+                <h2 style={styles.title}>SMART SELECT</h2>
                 <div style={styles.activeLine} />
               </div>
             </div>
@@ -93,7 +93,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
 
           <div style={styles.gridContent}>
             <div style={styles.grid}>
-              {renderTile(0, "RESUME ALIGNMENT", (
+              {renderTile(0, "Resume Analysis", (
                 <div>
                  
                 {isLoading ? (
@@ -108,9 +108,9 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   </div>
                 )}
                 </div>
-              ), "PDF_CORE")}
+              ), "Resume Analysis")}
 
-              {renderTile(1, "PROJECT DEPTH", (
+              {renderTile(1, "Portfolio Analysis", (
                 <div>
                  
                 {isLoading ? (
@@ -125,9 +125,9 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   </div>
                 )}
                 </div>
-              ), "WEB_PORTFOLIO")}
+              ), "Portfolio Analysis")}
         
-               {renderTile(2, "PROBLEM SOLVING", (
+               {renderTile(2, "Leetcode Analysis", (
                 <div>
                  
                 {isLoading ? (
@@ -142,9 +142,9 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   </div>
                 )}
                 </div>
-              ), "LEETCODE_STATS")}
+              ), "Leetcode Analysis")}
 
-                {renderTile(3, "AI_SYNTHESIS", (
+                {renderTile(3, "Overall Analysis", (
                 <div>
                  
                 {isLoading ? (
@@ -159,7 +159,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   
                 )}
                 </div>
-              ), "AI_SYNTHESIS")}
+              ), "Overall Analysis")}
             </div>
           </div>
         </div>
@@ -247,7 +247,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   matrixHeader: { paddingBottom: '8px', flexShrink: 0 },
   headerTitleRow: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  title: { fontSize: '10px', color: '#475569', letterSpacing: '2px', fontFamily: 'var(--font-mono)' },
+  title: { fontSize: '10px', color: '#475569', letterSpacing: '2px', fontFamily: 'var(--font-roboto)' },
   activeLine: { width: '40px', height: '2px', background: '#be185d', boxShadow: '0 0 10px #be185d' },
   tile: { 
     background: 'rgba(15, 23, 42, 0.3)', 
@@ -261,16 +261,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   expanded: { gridColumn: '1 / -1', gridRow: '1 / -1', border: '1px solid #be185d', zIndex: 10, background: '#020617' },
   tileHeader: { display: 'flex', justifyContent: 'space-between', marginBottom: '16px' },
-  tileTitle: { fontSize: '11px', color: '#f8fafc', fontFamily: 'var(--font-mono)' },
-  tileLabel: { fontSize: '9px', color: '#be185d', fontFamily: 'var(--font-mono)' },
+  tileTitle: { fontSize: '11px', color: '#f8fafc', fontFamily: 'var(--font-roboto)' },
+  tileLabel: { fontSize: '9px', color: '#be185d', fontFamily: 'var(--font-roboto)' },
   scrollWrapper: { flex: 1, overflowY: 'auto' },
   zoomHint: { position: 'absolute' as const, bottom: '12px', right: '16px', fontSize: '8px', color: '#334155' },
   
   viewerFrame: { flex: 1, borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.15)', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0f172a' },
   browserBar: { background: '#1e293b', padding: '10px 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' },
   addressBox: { background: '#020617', padding: '6px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' },
-  protocol: { color: '#be185d', fontSize: '9px', fontFamily: 'var(--font-mono)', fontWeight: 'bold' },
-  addressText: { color: '#94a3b8', fontSize: '10px', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  protocol: { color: '#be185d', fontSize: '9px', fontFamily: 'var(--font-roboto)', fontWeight: 'bold' },
+  addressText: { color: '#94a3b8', fontSize: '10px', fontFamily: 'var(--font-roboto)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   iframe: { flex: 1, border: 'none', background: '#fff' },
   loadingCardContainer: {
     height: '240px',

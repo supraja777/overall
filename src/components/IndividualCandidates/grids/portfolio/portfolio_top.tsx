@@ -42,18 +42,16 @@ const PortfolioTop = ({ data }: any) => {
         <div style={styles.statusBox}>
           <div style={styles.labelRow}>
             <div style={styles.glowDot} />
-            <span style={styles.label}>PORTFOLIO_MATCH_ENGINE</span>
           </div>
           <h3 style={styles.matchTitle}>
             Strength: <span style={styles.highlight}>{strength.toUpperCase()}</span>
           </h3>
-          <p style={styles.subText}>Architecture verified via {data?.main_projects?.length || 0} projects.</p>
         </div>
       </div>
 
       {/* --- SKILLS SECTION: TECH BADGES --- */}
       <div style={styles.skillsSection}>
-        <span style={styles.label}>EXTRACTED_STACK_SUMMARY</span>
+        <span style={styles.label}>Top Skills</span>
         <div style={styles.chipGrid}>
           {topTech.length > 0 ? (
             topTech.slice(0, 10).map((tech, i) => (

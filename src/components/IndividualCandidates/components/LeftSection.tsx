@@ -35,7 +35,7 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
         </div>
 
       <div style={styles.content}>
-        <span style={styles.label}>QUEUE ({items.length})</span>
+        <span style={styles.label}>Data ({items.length})</span>
         
         <div style={styles.list}>
           {items.map((it) => (
@@ -47,7 +47,7 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
               <span style={{ fontSize: '18px' }}>{it.type === 'file' ? '📄' : '🔗'}</span> 
               <div style={styles.itemTextContainer}>
                 <div style={styles.itemName}>{it.name}</div>
-                <div style={styles.itemType}>{it.type.toUpperCase()} SOURCE</div>
+                
               </div>
             </div>
           ))}
@@ -55,14 +55,14 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
       </div>
 
       <div style={styles.footer}>
-        <input style={styles.input} placeholder="Enter URL..." value={url} onChange={(e) => setUrl(e.target.value)} />
+        <input style={styles.input} placeholder="Add URL..." value={url} onChange={(e) => setUrl(e.target.value)} />
         <div style={styles.buttonGroup}>
           <button onClick={() => { if(url) { onAdd(url, 'url'); setUrl(''); } }} style={styles.addBtn}>Add URL</button>
           <button onClick={() => fileInputRef.current?.click()} style={styles.uploadBtn}>Add PDF</button>
           <input type="file" ref={fileInputRef} hidden accept=".pdf" />
         </div>
         <button onClick={onRun} disabled={isAnalyzing || items.length === 0} style={styles.runBtn}>
-          {isAnalyzing ? 'SYNTHESIZING...' : 'ANALYZE CANDIDATE'}
+          {isAnalyzing ? 'SYNTHESIZING...' : 'Analyze Candidate'}
         </button>
       </div>
     </div>

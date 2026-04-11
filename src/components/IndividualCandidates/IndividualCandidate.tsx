@@ -4,11 +4,10 @@ import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
 import { updateGlobalStorage } from '../IndividualCandidates/utils/storage';
 
-// Dummy Data Imports
-import resumeDummy from './results/resume_agent_result.json';
-import portfolioDummy from './results/portfolio_agent_result.json';
-import leetcodeDummy from './results/leetcode_agent_result.json';
-import executiveDummy from './results/executive_result_agent.json';
+import resumeCachedData from './results/resume_agent_result.json';
+import portfolioCachedData from './results/portfolio_agent_result.json';
+import leetcodeCachedData from './results/leetcode_agent_result.json';
+import executiveCachedData from './results/executive_result_agent.json';
 
 // Define the Candidate Interface
 export interface Candidate {
@@ -48,54 +47,35 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: Indi
     });
   };
 
-  const loadDummyData = () => {
+  const loadCachedData = () => {
   // 1. Start the animation immediately
   setIsAnalyzing(true);
 
   // 2. Wrap the logic in a timeout to create the "natural" delay
   setTimeout(() => {
-    const dummyPayload = [
-      { domain: 'resume', content: JSON.stringify(resumeDummy) },
-      { domain: 'portfolio', content: JSON.stringify(portfolioDummy) },
-      { domain: 'leetcode', content: JSON.stringify(leetcodeDummy) }
+    const cachedPayload = [
+      { domain: 'resume', content: JSON.stringify(resumeCachedData) },
+      { domain: 'portfolio', content: JSON.stringify(portfolioCachedData) },
+      { domain: 'leetcode', content: JSON.stringify(leetcodeCachedData) }
     ];
 
-    setAiResults(dummyPayload);
-    setOverallResult(executiveDummy.executive_verdict);
+    setAiResults(cachedPayload);
+    setOverallResult(executiveCachedData.executive_verdict);
 
-    updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeDummy));
-    updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
-    updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
+    updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeCachedData));
+    updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioCachedData));
+    updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeCachedData));
 
     // 3. Stop the animation after 2.5 seconds
     setIsAnalyzing(false);
   }, 2500); 
 };
 
-  // const loadDummyData = () => {
-  //   setIsAnalyzing(true);
-
-  //   const dummyPayload = [
-  //     { domain: 'resume', content: JSON.stringify(resumeDummy) },
-  //     { domain: 'portfolio', content: JSON.stringify(portfolioDummy) },
-  //     { domain: 'leetcode', content: JSON.stringify(leetcodeDummy) }
-  //   ];
-
-  //   setAiResults(dummyPayload);
-  //   setOverallResult(executiveDummy.executive_verdict);
-
-  //   updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeDummy));
-  //   updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
-  //   updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
-
-  //   setIsAnalyzing(false);
-  // };
-
   useEffect(() => {
     if (selectedCandidate) {
-      const USE_DUMMY = true; 
-      if (USE_DUMMY) {
-        loadDummyData();
+      const USE_CACHED = true; 
+      if (USE_CACHED) {
+        loadCachedData();
       } 
     }
   }, [selectedCandidate]);

@@ -23,6 +23,7 @@ const CandidateProfile = ({ name, photoUrl, email, phone }: CandidateProfileProp
             <div style={styles.activeDot} />
           </div>
           <h2 style={styles.name}>{name}</h2>
+          <p style={styles.title}>Smart Select</p>
         </div>
       </div>
 
@@ -35,6 +36,7 @@ const CandidateProfile = ({ name, photoUrl, email, phone }: CandidateProfileProp
 };
 
 const styles = {
+  title: { fontSize: '10px', color: '#ed0c97', letterSpacing: '2px', fontFamily: 'var(--font-roboto)' },
   sidebarHeader: {
     padding: '32px 24px 10px 24px',
     backgroundColor: 'transparent', // FORCE TRANSPARENCY

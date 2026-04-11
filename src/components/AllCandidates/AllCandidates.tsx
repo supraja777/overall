@@ -18,8 +18,6 @@ const AllCandidates = ({ jobDescription, setJobDescription, candidates, onSave, 
         {/* PANEL 1: NAV */}
         <aside style={styles.leftPanel}>
           <div style={styles.panelHeader}>
-            <div style={styles.activeDot} />
-            <span style={styles.panelLabel}>SYSTEM_DIRECTORY</span>
           </div>
           <div className="hide-scrollbar" style={styles.scrollContent}>
             <LeftSection candidates={candidates} onSelect={onSelect} />
@@ -29,8 +27,7 @@ const AllCandidates = ({ jobDescription, setJobDescription, candidates, onSave, 
         {/* PANEL 2: MAIN ANALYSIS (High Shine) */}
         <main style={styles.mainPanel}>
           <div style={styles.panelHeader}>
-            <div style={styles.activeDot} />
-            <span style={styles.panelLabel}>NEURAL_ANALYSIS</span>
+         
           </div>
           <div className="hide-scrollbar" style={styles.scrollContent}>
             <MiddleSection onSave={onSave} />
@@ -40,8 +37,6 @@ const AllCandidates = ({ jobDescription, setJobDescription, candidates, onSave, 
         {/* PANEL 3: DATA */}
         <aside style={styles.rightPanel}>
           <div style={styles.panelHeader}>
-            <div style={styles.activeDot} />
-            <span style={styles.panelLabel}>DATA_SYNTHESIS</span>
           </div>
           <div className="hide-scrollbar" style={styles.scrollContent}>
             <RightSection 
