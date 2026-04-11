@@ -1,51 +1,23 @@
 import React, { useState } from 'react';
-// IMPORT YOUR ACTUAL GRID COMPONENTS
 import ResumeAnalysis from '../grids/resume_analysis';
 import PortfolioAnalysis from '../grids/portfolio_analysis';
 import LeetCodeAnalysis from '../grids/leetcode_analysis';
 import ExecutiveVerdict from '../grids/executive_verdict';
 
-const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, showGrid }: any) => {
+const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, showGrid, isLoading }: any) => {
   const [expandedTile, setExpandedTile] = useState<number | null>(null);
-
-  // --- 1. THE ACTUAL GRID RENDERING ---
-  const renderGrid = () => (
-    <div style={styles.grid}>
-      {/* TILE 0: RESUME ANALYSIS */}
-      {renderTile(0, "RESUME ALIGNMENT", (
-        <ResumeAnalysis data={results.find((r: any) => r.domain === 'resume') || results[0]} />
-      ), "PDF_CORE")}
-
-      {/* TILE 1: PORTFOLIO ANALYSIS */}
-      {renderTile(1, "PROJECT DEPTH", (
-        <PortfolioAnalysis data={results.find((r: any) => r.domain === 'portfolio') || results[1]} />
-      ), "WEB_PORTFOLIO")}
-
-      {/* TILE 2: LEETCODE ANALYSIS */}
-      {renderTile(2, "PROBLEM SOLVING", (
-        <LeetCodeAnalysis data={results.find((r: any) => r.domain === 'leetcode') || results[2]} />
-      ), "LEETCODE_STATS")}
-
-      {/* TILE 3: EXECUTIVE VERDICT */}
-      {renderTile(3, "EXECUTIVE VERDICT", (
-        <ExecutiveVerdict summary={overallResult} />
-      ), "AI_SYNTHESIS")}
-    </div>
-  );
 
   const renderTile = (index: number, title: string, content: any, label: string) => {
     const isExpanded = expandedTile === index;
-    // Hide other tiles when one is expanded
     if (expandedTile !== null && !isExpanded) return null;
 
     return (
       <div 
-        onClick={() => setExpandedTile(isExpanded ? null : index)}
+        onClick={() => !isLoading && setExpandedTile(isExpanded ? null : index)}
         style={{ 
           ...styles.tile, 
           ...(isExpanded ? styles.expanded : {}),
-          // When expanded, we want to allow scrolling if the grid content is long
-          overflowY: isExpanded ? 'auto' : 'hidden' 
+          cursor: isLoading ? 'wait' : (isExpanded ? 'zoom-out' : 'pointer'),
         }}
       >
         <div style={styles.tileHeader}>
@@ -53,62 +25,87 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
           <span style={styles.tileLabel}>{label}</span>
         </div>
         
-        <div style={{
-          ...styles.tileBody,
-          alignItems: isExpanded ? 'flex-start' : 'center' // Align top when zoomed
-        }}>
+        {/* Scrollable container that respects parent bounds */}
+        <div style={styles.scrollContent} className="custom-scroll">
           {content}
         </div>
 
-        {!isExpanded && <div style={styles.zoomHint}>CLICK_TO_EXPAND</div>}
-      </div>
-    );
-  };
-
-  // --- 2. THE SOURCE VIEWER (For PDF/URL view) ---
-  const renderViewer = () => {
-    if (!activeView) return <div style={styles.empty}>INITIALIZING_FORENSIC_STREAM...</div>;
-    const isFile = activeView.type === 'file';
-    const source = isFile ? selectedCandidate?.resumeUrl : activeView.content;
-
-    return (
-      <div style={styles.viewerFrame}>
-        <div style={styles.browserBar}>
-          <div style={styles.dots}><div style={styles.dot}></div><div style={styles.dot}></div><div style={styles.dot}></div></div>
-          <div style={styles.address}>{isFile ? "SOURCE_RESUME.PDF" : source}</div>
-        </div>
-        <iframe src={isFile ? `${source}#toolbar=0` : source} style={styles.iframe} title="Source View" />
+        {!isExpanded && !isLoading && <div style={styles.zoomHint}>CLICK_TO_EXPAND</div>}
       </div>
     );
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.outerContainer}>
       <div style={styles.header}>
         <h2 style={styles.title}>{showGrid ? "COMPETENCY_MATRIX" : "SOURCE_DOSSIER"}</h2>
       </div>
-      <div style={styles.contentContainer}>
-        {showGrid ? renderGrid() : renderViewer()}
+      <div style={styles.mainGridArea}>
+        {showGrid ? (
+          <div style={styles.grid}>
+            {renderTile(0, "RESUME ALIGNMENT", isLoading ? <Loader /> : <ResumeAnalysis data={results.find((r: any) => r.domain === 'resume') || results[0]} />, "PDF_CORE")}
+            {renderTile(1, "PROJECT DEPTH", isLoading ? <Loader /> : <PortfolioAnalysis data={results.find((r: any) => r.domain === 'portfolio') || results[1]} />, "WEB_PORTFOLIO")}
+            {renderTile(2, "PROBLEM SOLVING", isLoading ? <Loader /> : <LeetCodeAnalysis data={results.find((r: any) => r.domain === 'leetcode') || results[2]} />, "LEETCODE_STATS")}
+            {renderTile(3, "EXECUTIVE VERDICT", isLoading ? <Loader /> : <ExecutiveVerdict summary={overallResult} />, "AI_SYNTHESIS")}
+          </div>
+        ) : (
+          <SourceViewer activeView={activeView} selectedCandidate={selectedCandidate} />
+        )}
       </div>
     </div>
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  container: { flex: 1, display: 'flex', flexDirection: 'column', background: '#09090b', overflow: 'hidden' },
-  header: { padding: '20px 40px', borderBottom: '1px solid #1e293b', background: '#09090b' },
-  title: { fontSize: '10px', fontWeight: 900, color: '#475569', letterSpacing: '2px' },
-  contentContainer: { flex: 1, padding: '20px', overflow: 'hidden' },
+const Loader = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="spinner"></div>
+    <span style={{ fontSize: '9px', color: '#be185d', marginTop: '10px' }}>ANALYZING...</span>
+  </div>
+);
 
-  // Grid Logic
+const SourceViewer = ({ activeView, selectedCandidate }: any) => {
+  const isFile = activeView?.type === 'file';
+  const source = isFile ? selectedCandidate?.resumeUrl : activeView?.content;
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', border: '1px solid #1e293b', borderRadius: '12px', overflow: 'hidden' }}>
+      <iframe src={source} style={{ flex: 1, border: 'none', background: '#fff' }} title="viewer" />
+    </div>
+  );
+};
+
+const styles: Record<string, React.CSSProperties> = {
+  outerContainer: { 
+    height: '100%', 
+    width: '100%',
+    display: 'flex', 
+    flexDirection: 'column', 
+    background: '#09090b', 
+    overflow: 'hidden' 
+  },
+  header: { 
+    padding: '15px 30px', 
+    borderBottom: '1px solid #1e293b', 
+    flexShrink: 0 
+  },
+  title: { fontSize: '10px', fontWeight: 900, color: '#475569', letterSpacing: '2px' },
+  
+  mainGridArea: { 
+    flex: 1, 
+    padding: '30px', // Increased padding to give the grid "room to breathe"
+    boxSizing: 'border-box',
+    overflow: 'hidden'
+  },
+
   grid: { 
     display: 'grid', 
-    gridTemplateColumns: '1fr 1fr', 
-    gridTemplateRows: '1fr 1fr', 
-    gap: '20px', 
-    height: '100%',
-    width: '100%' 
+    gridTemplateColumns: 'repeat(2, 1fr)', 
+    gridTemplateRows: 'repeat(2, 1fr)', 
+    gap: '30px', // Forced 30px gap
+    height: '100%', 
+    width: '100%',
+    boxSizing: 'border-box'
   },
+
   tile: { 
     background: '#111114', 
     border: '1px solid #1e293b', 
@@ -116,33 +113,38 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '24px', 
     display: 'flex', 
     flexDirection: 'column', 
-    cursor: 'pointer', 
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    position: 'relative'
+    height: '100%', 
+    width: '100%',
+    overflow: 'hidden', // Forces internal scrolling
+    position: 'relative',
+    boxSizing: 'border-box'
   },
+
   expanded: { 
     gridColumn: '1 / -1', 
     gridRow: '1 / -1', 
-    border: '1px solid #be185d',
-    background: '#0c0c0e',
-    cursor: 'zoom-out'
+    border: '2px solid #be185d', // Thicker border for clarity
+    zIndex: 10 
+  },
+
+  tileHeader: { 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    marginBottom: '15px', 
+    flexShrink: 0 
+  },
+  tileTitle: { fontSize: '11px', fontWeight: 900, color: '#f8fafc' },
+  tileLabel: { fontSize: '9px', fontWeight: 800, color: '#be185d' },
+
+  scrollContent: { 
+    flex: 1, 
+    overflowY: 'auto', 
+    overflowX: 'hidden',
+    textAlign: 'left',
+    paddingRight: '10px'
   },
   
-  tileHeader: { display: 'flex', justifyContent: 'space-between', marginBottom: '20px' },
-  tileTitle: { fontSize: '11px', fontWeight: 900, color: '#f8fafc', letterSpacing: '1px' },
-  tileLabel: { fontSize: '9px', fontWeight: 800, color: '#be185d' },
-  
-  tileBody: { flex: 1, display: 'flex', justifyContent: 'center' },
-  zoomHint: { position: 'absolute', bottom: '12px', right: '12px', fontSize: '8px', color: '#334155', fontWeight: 900 },
-
-  // Viewer
-  viewerFrame: { height: '100%', borderRadius: '12px', border: '1px solid #1e293b', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
-  browserBar: { background: '#1e293b', padding: '12px', display: 'flex', alignItems: 'center', gap: '15px' },
-  dots: { display: 'flex', gap: '6px' },
-  dot: { width: '8px', height: '8px', borderRadius: '50%', background: '#475569' },
-  address: { flex: 1, background: '#0f172a', color: '#94a3b8', fontSize: '10px', padding: '6px 12px', borderRadius: '4px', fontFamily: 'monospace' },
-  iframe: { flex: 1, border: 'none', background: '#fff' },
-  empty: { height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b', fontWeight: 900, letterSpacing: '4px' }
+  zoomHint: { position: 'absolute', bottom: '12px', right: '15px', fontSize: '8px', color: '#334155' }
 };
 
 export default MiddleSection;

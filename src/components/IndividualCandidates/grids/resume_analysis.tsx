@@ -1,37 +1,32 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 const ResumeAnalysis = ({ data }: any) => {
-  // Parsing example analysis text into bullet points
-  const points = data?.content?.split('\n').filter((p: string) => p.trim() !== '') || [];
+  if (!data?.content) return <div style={{color: '#475569'}}>EXTRACTING_DATA...</div>;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.scoreRow}>
-        <div style={styles.radialScore}>85%</div>
-        <div style={styles.scoreLabel}>JD_ALIGNMENT</div>
+    <div className="markdownWrapper custom-scroll">
+      <div style={localStyles.scoreRow}>
+        <div style={localStyles.radialScore}>85%</div>
+        <div style={localStyles.scoreLabel}>JD_ALIGNMENT</div>
       </div>
       
-      <div style={styles.list}>
-        {points.map((point: string, i: number) => (
-          <div key={i} style={styles.item}>
-            <span style={styles.bullet}>▶</span>
-            <span style={styles.text}>{point}</span>
-          </div>
-        ))}
-      </div>
+      <ReactMarkdown>{data.content}</ReactMarkdown>
     </div>
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  container: { width: '100%', padding: '10px' },
-  scoreRow: { display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' },
-  radialScore: { fontSize: '32px', fontWeight: 900, color: '#be185d' },
-  scoreLabel: { fontSize: '10px', fontWeight: 800, color: '#64748b', letterSpacing: '1px' },
-  list: { display: 'flex', flexDirection: 'column', gap: '12px' },
-  item: { display: 'flex', gap: '10px', fontSize: '13px', color: '#cbd5e1', lineHeight: '1.5' },
-  bullet: { color: '#be185d', fontSize: '10px', marginTop: '4px' },
-  text: { textAlign: 'left' }
+const localStyles = {
+  scoreRow: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '15px', 
+    marginBottom: '20px',
+    borderBottom: '1px solid #1e293b',
+    paddingBottom: '10px'
+  },
+  radialScore: { fontSize: '28px', fontWeight: 900, color: '#be185d' },
+  scoreLabel: { fontSize: '9px', fontWeight: 800, color: '#64748b' },
 };
 
 export default ResumeAnalysis;
