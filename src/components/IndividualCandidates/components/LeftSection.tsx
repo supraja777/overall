@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-
+import CandidateProfile from './CandidateProfiile';
 interface LeftSectionProps {
   items: any[];
   onAdd: (name: string, type: 'file' | 'url', content?: string) => void;
@@ -25,13 +25,13 @@ const LeftSection = ({ items, onAdd, onViewSource, onRun, isAnalyzing, selectedC
 
   return (
     <div style={styles.sidebar}>
-      <div style={styles.brand}>
-        <div style={styles.logo}>✦</div>
-        <div>
-          <h2 style={styles.brandName}>NEURAL ANALYST</h2>
-          {selectedCandidate && <div style={styles.targetBadge}>TARGET: {selectedCandidate.name}</div>}
+     <div>
+        <CandidateProfile 
+        name="Supraja Srikanth" 
+        email="supraja@uc.edu" 
+        phone="+1 513 000 0000" 
+      />
         </div>
-      </div>
 
       <div style={styles.content}>
         <span style={styles.label}>QUEUE ({items.length})</span>
