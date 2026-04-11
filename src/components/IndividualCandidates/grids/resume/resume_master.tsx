@@ -1,8 +1,13 @@
 import React, { useMemo } from 'react';
 import ResumeTop from './resume_top';
 import ResumeAnalysis from './resume_analysis';
+interface ResumeGridProps {
+  data: any;
+  isExpanded: boolean;
+  isLoading?: boolean; // Add this line
+}
 
-const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) => {
+const ResumeGrid = ({ isLoading, data, isExpanded }: ResumeGridProps) => {
   const parsedData = useMemo(() => {
     if (!data) return null;
     console.log("data in grid", data)
@@ -25,6 +30,7 @@ const ResumeGrid = ({ data, isExpanded }: { data: any, isExpanded: boolean }) =>
       {/* 1. THE HEADER: Score Ring & Top Skills */}
       <div style={styles.fixedHeader}>
         <ResumeTop 
+          isLoading = {isLoading}
           matchScore={parsedData.match_percentage} 
           topSkills={parsedData.top_8_skills} 
         />

@@ -5,12 +5,15 @@ import ExecutiveTop from '../grids/executive_top';
 import ExecutiveVerdict from '../grids/executive_verdict';
 import PortfolioMaster from '../grids/portfolio/portfolio_masters';
 import LeetCodeMaster from '../grids/leetcode/leetcode_master';
+import AnalysingGridCard from './AnalysingGridCard';
 
 const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, showGrid, isLoading }: any) => {
   const [expandedTile, setExpandedTile] = useState<number | null>(null);
   const renderTile = (index: number, title: string, content: any, label: string) => {
     const isExpanded = expandedTile === index;
     if (expandedTile !== null && !isExpanded) return null;
+
+
 
     return (
       <div 
@@ -93,33 +96,69 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
               {renderTile(0, "RESUME ALIGNMENT", (
                 <div>
                  
-                <ResumeGrid 
-                  data={results?.find((r: any) => r.domain.toLowerCase().includes('resume'))} 
-                  isExpanded={expandedTile === 0} 
-                />
+                {isLoading ? (
+                  // SHOW THE SPINNING PLACEHOLDER
+                  <AnalysingGridCard  />
+                ) : (
+                  // SHOW THE ACTUAL GRID IF NOT LOADING
+                  <div className="fade-in-content">
+                    <ResumeGrid 
+                     data={results?.find((r: any) => r.domain.toLowerCase().includes('resume'))}
+                    isExpanded={expandedTile === 0} />
+                  </div>
+                )}
                 </div>
               ), "PDF_CORE")}
 
               {renderTile(1, "PROJECT DEPTH", (
-                <PortfolioMaster 
-                  data={results?.find((r: any) => r.domain.toLowerCase().includes('portfolio'))}
-                  isExpanded={expandedTile === 0}
-                />
+                <div>
                  
+                {isLoading ? (
+                  // SHOW THE SPINNING PLACEHOLDER
+                  <AnalysingGridCard  />
+                ) : (
+                  // SHOW THE ACTUAL GRID IF NOT LOADING
+                  <div className="fade-in-content">
+                    <PortfolioMaster 
+                     data={results?.find((r: any) => r.domain.toLowerCase().includes('portfolio'))}
+                    isExpanded={expandedTile === 0} />
+                  </div>
+                )}
+                </div>
               ), "WEB_PORTFOLIO")}
-
-              {renderTile(2, "PROBLEM SOLVING", (
-                <LeetCodeMaster
-                data={results?.find((r: any) => r.domain === 'leetcode')}
-                isExpanded = {expandedTile === 0}
-                />
+        
+               {renderTile(2, "PROBLEM SOLVING", (
+                <div>
+                 
+                {isLoading ? (
+                  // SHOW THE SPINNING PLACEHOLDER
+                  <AnalysingGridCard  />
+                ) : (
+                  // SHOW THE ACTUAL GRID IF NOT LOADING
+                  <div className="fade-in-content">
+                    <LeetCodeMaster 
+                     data={results?.find((r: any) => r.domain.toLowerCase().includes('leetcode'))}
+                    isExpanded={expandedTile === 0} />
+                  </div>
+                )}
+                </div>
               ), "LEETCODE_STATS")}
 
-              {renderTile(3, "EXECUTIVE VERDICT", (
-                <>
+                {renderTile(3, "AI_SYNTHESIS", (
+                <div>
+                 
+                {isLoading ? (
+                  // SHOW THE SPINNING PLACEHOLDER
+                  <AnalysingGridCard  />
+                ) : (
+                   <>
                   <ExecutiveTop />
                   <ExecutiveVerdict summary={overallResult} />
                 </>
+                  // SHOW THE ACTUAL GRID IF NOT LOADING
+                  
+                )}
+                </div>
               ), "AI_SYNTHESIS")}
             </div>
           </div>
@@ -232,7 +271,42 @@ const styles: Record<string, React.CSSProperties> = {
   addressBox: { background: '#020617', padding: '6px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' },
   protocol: { color: '#be185d', fontSize: '9px', fontFamily: 'var(--font-mono)', fontWeight: 'bold' },
   addressText: { color: '#94a3b8', fontSize: '10px', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  iframe: { flex: 1, border: 'none', background: '#fff' }
+  iframe: { flex: 1, border: 'none', background: '#fff' },
+  loadingCardContainer: {
+    height: '240px',
+    background: '#020617',
+    border: '1px solid #1e293b',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    margin: '12px 0',
+  },
+  spinnerWrapper: { 
+    position: 'relative', 
+    width: '70px', // Slightly larger for the thicker ring
+    height: '70px' 
+  },
+  thickRing: {
+    position: 'absolute', 
+    inset: 0,
+    border: '6px solid rgba(190, 24, 93, 0.1)', // Subtle background of the circle
+    borderTop: '6px solid #be185d',           // Thick spinning part
+    borderRight: '6px solid #be185d',         // Makes it a 50% arc
+    borderRadius: '50%',
+    filter: 'drop-shadow(0 0 8px #be185d)',   // Makes the thick line glow
+  },
+  innerIcon: {
+    position: 'absolute', 
+    inset: 0,
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    color: '#be185d', 
+    fontSize: '22px', 
+    animation: 'pulse 1.5s infinite ease-in-out'
+  },
 };
 
 export default MiddleSection;

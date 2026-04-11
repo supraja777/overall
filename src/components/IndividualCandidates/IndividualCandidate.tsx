@@ -49,8 +49,11 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: Indi
   };
 
   const loadDummyData = () => {
-    setIsAnalyzing(true);
+  // 1. Start the animation immediately
+  setIsAnalyzing(true);
 
+  // 2. Wrap the logic in a timeout to create the "natural" delay
+  setTimeout(() => {
     const dummyPayload = [
       { domain: 'resume', content: JSON.stringify(resumeDummy) },
       { domain: 'portfolio', content: JSON.stringify(portfolioDummy) },
@@ -64,8 +67,29 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: Indi
     updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
     updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
 
+    // 3. Stop the animation after 2.5 seconds
     setIsAnalyzing(false);
-  };
+  }, 2500); 
+};
+
+  // const loadDummyData = () => {
+  //   setIsAnalyzing(true);
+
+  //   const dummyPayload = [
+  //     { domain: 'resume', content: JSON.stringify(resumeDummy) },
+  //     { domain: 'portfolio', content: JSON.stringify(portfolioDummy) },
+  //     { domain: 'leetcode', content: JSON.stringify(leetcodeDummy) }
+  //   ];
+
+  //   setAiResults(dummyPayload);
+  //   setOverallResult(executiveDummy.executive_verdict);
+
+  //   updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeDummy));
+  //   updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioDummy));
+  //   updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeDummy));
+
+  //   setIsAnalyzing(false);
+  // };
 
   useEffect(() => {
     if (selectedCandidate) {
