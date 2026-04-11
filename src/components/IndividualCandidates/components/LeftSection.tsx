@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// VITE-SPECIFIC WORKER CONFIG: 
-// This resolves the CORS and Version Mismatch errors by using your local node_modules
+// VITE-SPECIFIC WORKER CONFIG
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -11,11 +10,25 @@ interface LeftSectionProps {
   onAdd: (name: string, type: 'file' | 'url', content?: string) => void;
   onRun: () => void;
   isAnalyzing: boolean;
+  selectedCandidate?: any; // Kept for auto-ingestion
 }
 
-const LeftSection = ({ items, onAdd, onRun, isAnalyzing }: LeftSectionProps) => {
+const LeftSection = ({ items, onAdd, onRun, isAnalyzing, selectedCandidate }: LeftSectionProps) => {
   const [url, setUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // AUTO-POPULATE: Grabs links from the selected candidate profile
+  useEffect(() => {
+    if (selectedCandidate) {
+      const existingNames = items.map(i => i.name);
+      if (selectedCandidate.portfolio && !existingNames.includes(selectedCandidate.portfolio)) {
+        onAdd(selectedCandidate.portfolio, 'url');
+      }
+      if (selectedCandidate.leetcode && !existingNames.includes(selectedCandidate.leetcode)) {
+        onAdd(selectedCandidate.leetcode, 'url');
+      }
+    }
+  }, [selectedCandidate]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -28,21 +41,18 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing }: LeftSectionProps) => 
         try {
           const typedarray = new Uint8Array(event.target?.result as ArrayBuffer);
           
-          // Initialize PDF document
           const loadingTask = pdfjsLib.getDocument({ 
             data: typedarray,
-            useWorkerFetch: true, // Ensures it uses our defined worker
+            useWorkerFetch: true,
           });
           
           const pdf = await loadingTask.promise;
           let fullText = "";
 
-          // Extract text from all pages
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             
-            // v5.x extraction: ensuring we handle text items correctly
             const pageText = textContent.items
               .map((item: any) => item.str || "")
               .join(" ");
@@ -63,15 +73,12 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing }: LeftSectionProps) => 
       };
       reader.readAsArrayBuffer(file);
     } else {
-      // Logic for .txt or .md files
       const reader = new FileReader();
       reader.onload = (event) => {
         onAdd(file.name, 'file', event.target?.result as string);
       };
       reader.readAsText(file);
     }
-    
-    // Reset input so the same file can be re-uploaded if needed
     e.target.value = "";
   };
 
@@ -80,7 +87,10 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing }: LeftSectionProps) => 
       {/* Brand Section */}
       <div style={styles.brand}>
         <div style={styles.logo}>✦</div>
-        <h2 style={styles.brandName}>NEURAL ANALYST</h2>
+        <div style={styles.brandTextContainer}>
+            <h2 style={styles.brandName}>NEURAL ANALYST</h2>
+            {selectedCandidate && <div style={styles.activeUser}>TARGET: {selectedCandidate.name}</div>}
+        </div>
       </div>
 
       {/* Item Queue */}
@@ -152,7 +162,7 @@ const LeftSection = ({ items, onAdd, onRun, isAnalyzing }: LeftSectionProps) => 
             cursor: (isAnalyzing || items.length === 0) ? 'not-allowed' : 'pointer'
           }}
         >
-          {isAnalyzing ? 'SYNTHESIZING...' : 'RUN ANALYTICS'}
+          {isAnalyzing ? 'SYNTHESIZING...' : 'ANALYZE CANDIDATE'}
         </button>
       </div>
     </div>
@@ -171,7 +181,9 @@ const styles: Record<string, React.CSSProperties> = {
     width: '32px', height: '32px', borderRadius: '8px', 
     display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' 
   },
-  brandName: { fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px' },
+  brandTextContainer: { display: 'flex', flexDirection: 'column' },
+  brandName: { fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px', margin: 0 },
+  activeUser: { fontSize: '9px', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' },
   content: { flex: 1, padding: '0 24px', overflowY: 'auto' },
   label: { fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1.5px', marginBottom: '16px', display: 'block' },
   list: { display: 'flex', flexDirection: 'column', gap: '10px' },
@@ -200,7 +212,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   runBtn: { 
     width: '100%', padding: '14px', borderRadius: '8px', background: '#fff', 
-    color: '#000', fontWeight: 800, fontSize: '12px', border: 'none' 
+    color: '#000', fontWeight: 900, fontSize: '12px', border: 'none' 
   }
 };
 

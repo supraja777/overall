@@ -1,4 +1,4 @@
-import { callGroqModel } from '../utils/agent'; // Reuse your existing Groq caller
+import { callGroqModel } from '../components/IndividualCandidates/utils/agent'; // Reuse your existing Groq caller
 
 export const overall_agent = async (allAnalyses: any[]) => {
   const formattedData = allAnalyses.map(a => `[Source: ${a.domain}]\n${a.report}`).join("\n\n---\n\n");

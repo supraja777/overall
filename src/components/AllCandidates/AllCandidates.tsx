@@ -1,38 +1,25 @@
-import { useState } from 'react';
 import LeftSection from './components/LeftSection';
 import MiddleSection from './components/MiddleSection';
 import RightSection from './components/RightSection';
+import { Candidate } from '../../App';
 
-export interface Candidate {
-  id: string;
-  name: string;
-  photo: string | null;
-  portfolio: string;
-  leetcode: string;
+interface AllCandidatesProps {
+  candidates: Candidate[];
+  onSave: (c: Candidate) => void;
+  onSelect: (c: Candidate) => void;
 }
 
-const AllCandidates = () => {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-
-  const addCandidate = (newCandidate: Candidate) => {
-    setCandidates((prev) => [...prev, newCandidate]);
-  };
-
+const AllCandidates = ({ candidates, onSave, onSelect }: AllCandidatesProps) => {
   return (
-    <div style={styles.layout}>
-      {/* Pass the list to the left section */}
-      <LeftSection candidates={candidates} />
+    <div style={{ display: 'flex', height: '100vh' }}>
+      {/* Ensure onSelect is passed here */}
+      <LeftSection candidates={candidates} onSelect={onSelect} />
       
-      {/* Pass the save function to the middle section */}
-      <MiddleSection onSave={addCandidate} />
+      <MiddleSection onSave={onSave} />
       
       <RightSection />
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  layout: { display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#ffffff' }
 };
 
 export default AllCandidates;

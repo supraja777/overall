@@ -1,7 +1,7 @@
-import { leetcode_agent } from '../agents/leetcode_agent';
-import { portfolio_agent } from '../agents/portfolio_agent';
-import { linkedin_agent } from '../agents/linkedin_agent';
-import { resume_agent } from '../agents/resume_agent';
+import { leetcode_agent } from '../../../agents/leetcode_agent';
+import { portfolio_agent } from '../../../agents/portfolio_agent';
+import { linkedin_agent } from '../../../agents/linkedin_agent';
+import { resume_agent } from '../../../agents/resume_agent';
 import { updateGlobalStorage } from './storage'; // Import the central storage utility
 
 /**

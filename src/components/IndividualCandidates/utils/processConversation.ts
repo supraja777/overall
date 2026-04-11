@@ -1,4 +1,4 @@
-import { conversation_agent } from '../agents/conversation_agent';
+import { conversation_agent } from '../../../agents/conversation_agent';
 import { getFullContextForCompression } from './storage'; // Import your storage getter
 
 export const processConversation = async (history: { role: 'recruiter' | 'ai', content: string }[]) => {
