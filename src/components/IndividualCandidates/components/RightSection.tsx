@@ -67,11 +67,11 @@ const RightSection = ({ jobDescription, candidate }) => {
       // Intent Detection Logic
       const lowerRes = aiResponse.toLowerCase();
     
-        if (lowerRes.includes('coding invite') || lowerRes.includes('test sent')) {
-          setActionStatus("Coding invite sent");
-        } else if (lowerRes.includes('email') || lowerRes.includes('mail sent')) {
+        if (lowerRes.includes('test') || lowerRes.includes('test')) {
+          setActionStatus("Coding test invite sent");
+        } else if (lowerRes.includes('email') || lowerRes.includes('mail')) {
           setActionStatus("Email Sent");
-        } else if (lowerRes.includes('sms') || lowerRes.includes('text sent')) {
+        } else if (lowerRes.includes('sms') || lowerRes.includes('text')) {
           setActionStatus("Text Sent");
         }
 
@@ -141,9 +141,9 @@ const RightSection = ({ jobDescription, candidate }) => {
           <div style={styles.eventContent}>
             
             <div style={styles.eventBody}>
-              <span style={styles.eventSubject}>{actionStatus.toUpperCase()}</span>
-              <span style={styles.eventConnector}> transmitted to </span>
-              <span style={styles.eventTarget}>{candidate.name.toUpperCase()}</span>
+              <span style={styles.eventSubject}>{actionStatus}</span>
+              <span style={styles.eventConnector}> sent to </span>
+              <span style={styles.eventTarget}>{candidate.name}</span>
             </div>
           </div>
         </div>

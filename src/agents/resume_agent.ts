@@ -3,7 +3,9 @@
  * Enhanced to extract granular professional and academic history.
  */
 export const resume_agent = {
+  
   process: async (resumeData: string): Promise<string> => {
+    console.log("In the resume agent")
     const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
     // Hardcoded JD for SDE/Distributed Systems

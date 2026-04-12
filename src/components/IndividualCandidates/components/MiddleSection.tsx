@@ -137,7 +137,7 @@ const MiddleSection = ({ results, overallResult, selectedCandidate, activeView, 
                   // SHOW THE ACTUAL GRID IF NOT LOADING
                   <div className="fade-in-content">
                     <LeetCodeMaster 
-                     data={results?.find((r: any) => r.domain.toLowerCase().includes('leetcode'))}
+                    data={results?.find((r: any) => r.domain.toLowerCase().includes('leetcode'))}
                     isExpanded={expandedTile === 0} />
                   </div>
                 )}

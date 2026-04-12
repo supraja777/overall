@@ -8,6 +8,9 @@ import resumeCachedData from './results/resume_agent_result.json';
 import portfolioCachedData from './results/portfolio_agent_result.json';
 import leetcodeCachedData from './results/leetcode_agent_result.json';
 import executiveCachedData from './results/executive_result_agent.json';
+import { resume_agent } from '../../agents/resume_agent';
+import { portfolio_agent } from '../../agents/portfolio_agent';
+import { scrapData } from './utils/scraper';
 
 // Define the Candidate Interface
 export interface Candidate {
@@ -47,6 +50,85 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: Indi
     });
   };
 
+  const loadAIresults = async (items: any[]) => {
+    console.log("All items ", items)
+    console.log("hii")
+    
+    setIsAnalyzing(true);
+    setAiResults([]);
+    setOverallResult(null); 
+    console.log("All items ", items)
+    for (const item of items) {
+      let dataToAnalyze = "";
+      let label = item.name;
+      console.log("Current item ", item)
+      try {
+        if (item.type === 'file') {
+          dataToAnalyze = item.content || "";
+        } else {
+          const result = await scrapData(item.name);
+          if (result.success && result.data) {
+            dataToAnalyze = result.data;
+            label = new URL(item.name).hostname.replace('www.', '');
+          }
+        }
+        if (dataToAnalyze) {
+          console.log("Data to analyse is ", dataToAnalyze)
+          console.log("Label is ", label )
+          if (label.toLowerCase().includes('resume')) {
+            console.log("Processing resume data ")
+            const resumeAnalysis = await resume_agent.process(dataToAnalyze);
+            console.log("Getting Resume analysis ", resumeAnalysis)
+            setAiResults((prev) => [...prev, {domain: label, content : resumeAnalysis}])
+          }
+          if (label.toLowerCase().includes('portfolio')) {
+            console.log("Processing resume data ")
+            const portfolioAnalysis = await portfolio_agent.process(dataToAnalyze);
+            console.log("Getting Resume analysis ", portfolioAnalysis)
+            setAiResults((prev) => [...prev, {domain: label, content : portfolioAnalysis}])
+          }
+
+          if (label.toLowerCase().includes('leetcode')) {
+            setAiResults((prev) => [...prev, {domain: 'leetcode', content: JSON.stringify(leetcodeCachedData) }])
+          }
+          // const report = await agent({ [label]: dataToAnalyze });
+          // setAiResults((prev) => [...prev, { domain: label, content: "report" }]);
+        }
+      } catch (e) {
+        console.error(`Failed: ${item.name}`, e);
+      }
+    }
+
+   
+    setIsAnalyzing(false);
+  };
+
+//   const loadAIresults = async () => {
+//   // 1. Start the animation immediately
+//   console.log("IN LOAD AI RES")
+//   setIsAnalyzing(true);
+
+//   // 2. Wrap the logic in a timeout to create the "natural" delay
+//   const resumeAnalysis = await resume_agent.process("Java C++");
+  
+//     const cachedPayload = [
+//       { domain: 'resume', content: resumeAnalysis },
+//       { domain: 'portfolio', content: JSON.stringify(portfolio_agent) },
+//       { domain: 'leetcode', content: JSON.stringify(leetcodeCachedData) }
+//     ];
+
+//     setAiResults(cachedPayload);
+//     setOverallResult(executiveCachedData.executive_verdict);
+
+//     updateGlobalStorage('analysis', 'resume', JSON.stringify(resumeCachedData));
+//     updateGlobalStorage('analysis', 'portfolio', JSON.stringify(portfolioCachedData));
+//     updateGlobalStorage('analysis', 'leetcode', JSON.stringify(leetcodeCachedData));
+
+//     // 3. Stop the animation after 2.5 seconds
+//     setIsAnalyzing(false);
+  
+// };
+
   const loadCachedData = () => {
   // 1. Start the animation immediately
   setIsAnalyzing(true);
@@ -72,12 +154,21 @@ function IndividualCandidate({ jobDescription, selectedCandidate, onBack }: Indi
 };
 
   useEffect(() => {
+      console.log("Rereah")
+  }, [items]);
+
+  useEffect(() => {
     if (selectedCandidate) {
       const USE_CACHED = true; 
+      console.log("USE CACHED ?" , USE_CACHED)
       if (USE_CACHED) {
         loadCachedData();
-      } 
+      }  else {
+        while (len(items)== 0)
+        loadAIresults(items);
+      }
     }
+    console.log("AI Results ", aiResults)
   }, [selectedCandidate]);
 
   const runAnalysis = async () => {
